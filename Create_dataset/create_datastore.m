@@ -2,7 +2,8 @@ clear all
 close all
 clc
 
-path_data = ['\\nas1.ubmi.feec.vutbr.cz\Data\CELL\sdileni_jirina_roman_tom\CT_rotation_data_sample\training'];
+% path_data = ['\\nas1.ubmi.feec.vutbr.cz\Data\CELL\sdileni_jirina_roman_tom\CT_rotation_data_sample\training'];
+path_data = ['\\nas1.ubmi.feec.vutbr.cz\Data\CELL\sdileni_jirina_roman_tom\CT_rotation_data_sample\testing'];
 
 lbl = readcell([path_data '\labels_bin.xlsx']);
 
@@ -20,4 +21,5 @@ for i = 1:size(D,1)
     anot{i,2:8} = lbl{ind,2:8};
 end
 
-writetable(anot,'train_dataset_001.xlsx')
+% writetable(anot,'train_dataset_001.xlsx')
+writetable(anot,'test_dataset_001.xlsx')
