@@ -16,6 +16,9 @@ from torch.utils import data
 import os
 
 from config import Config
+import pandas as pd 
+
+from skimage.transform import resize
 
 
 class DataLoader(data.Dataset):
@@ -31,24 +34,58 @@ class DataLoader(data.Dataset):
 
         data = pd.read_excel(xl_file,header=None)
         
+        file_names=data.loc[:,0].values.tolist()
+        self.file_names=file_names
         
-        file_names_=data[0].values.tolist()
-        
-        labels=data.loc[:,1:7].to_numpy()
-        
-        
+        self.labels=data.loc[:,1:7].to_numpy()
         
         
         
-    
-    
     
     def __len__(self):
-        pass
+        return len(self.file_names)
     
     
     
     def __getitem__(self, index):
-        pass
+        
+        file_name=self.file_names[index]
+        
+        img_list=[]
+        
+        folders = ['max_40','max_All','mean_20','mean_All','std_40','std_All']
+        Rs= ['R3','R4','R1','R2','R5','R6']
+        
+        for folder,R in zip(folders,Rs):
+            
+            for k in range(3):
+                img_list.append(imread(self.path + os.sep +self.split +  os.sep +  folder +  os.sep + file_name  +'_' + R + '_Ch' + str(k+1)  + '.png'))
+            
+            
+         
+            
+        for k in range(len(img_list)):
+            
+            img_list[k]=resize(img_list[k].astype(np.float32),[224,224])
+            
+        
+            
+        imgs=np.stack(img_list,axis=0) -0.5
+        imgs=torch.from_numpy(imgs)
+        
+        lbl=self.labels[index,:]
+        lbl=torch.from_numpy(lbl)
+            
+        
+        
+        return imgs,lbl
+        
+        
+    
+    
+    
+    
+    
+    
 
      
