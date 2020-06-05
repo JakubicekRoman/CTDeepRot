@@ -21,7 +21,6 @@ labels = cellfun(@(x) ReaderValid(x), labels,'UniformOutput',false);
 pred = predict(net, imdsValid);
 
 %% statistic
-
 GT = cell2mat(labels);
 % pred = round(pred);
 
