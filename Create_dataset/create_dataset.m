@@ -3,10 +3,8 @@ clear all
 close all
 clc
 
-% path_save = ['\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\VerSe2019\Data_raw_train'];
-% path_save = ['\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\VerSe2019\datasets'];
-% path_save = ['D:\jakubicek\Rot_detection\training'];
-path_save = ['D:\jakubicek\Rot_detection\testing'];
+path_save = ['C:\Data\Jakubicek\CTDeepRot_data\training'];
+% path_save = ['C:\Data\Jakubicek\CTDeepRot_data\testing'];
 mkdir(path_save)
 
 path_save_img1 = [path_save '\' 'mean_20'];
@@ -27,14 +25,14 @@ mkdir(path_save_img5);
 path_save_img6 = [path_save '\' 'std_All'];
 mkdir(path_save_img6);
 
-% path_data = '\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\VerSe2019\Data_orig_train';
-% path_data = '\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\VerSe2019\Data_raw_train';
-path_data = '\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\VerSe2019\Data_raw_test';
+path_data = '\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\VerSe2019\Data_raw_train';
+% path_data = '\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\VerSe2019\Data_raw_test';
 
 
 D = dir([path_data '\*.mhd']);
 
-lbl = readcell([path_save '\labels.xlsx']);
+% lbl = readcell([path_save '\labels.xlsx']);
+lbl  = {};
 
 DAT = '02';
 numAll = size(lbl,1) + 1;

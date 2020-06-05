@@ -1,11 +1,12 @@
 function [im] = ReaderMultiChannel(filename)
 
-folders = {'max_40','max_All','mean_20','mean_All','std_40','std_All'};
-R = {'R3','R4','R1','R2','R5','R6'};
+% folders = {'max_40','max_All','mean_20','mean_All','std_40','std_All'};
+folders = {'max_40','std_All'};
+R = {'R3','R6'};
 CH = {'Ch1','Ch2','Ch3'};
 
 i=1;
-for f = 1:6
+for f = 1:length(folders)
     for ch = 1:3
         filename = strrep(filename,'mean_20',folders{f});
         filename = strrep(filename,'R1',R{f});
