@@ -23,7 +23,6 @@ pred = predict(net, imdsValid);
 %% statistic
 GT = cell2mat(labels);
 % pred = round(pred);
-
 RMSE = sqrt( sum(((GT - pred).^2),'All')/(numel(GT)) )
 
 ACC = sum( sum( (GT == (pred)),2)==6) ./ size(pred,1) *100
