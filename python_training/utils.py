@@ -13,8 +13,7 @@ def wce(res,lbls,w_positive_tensor,w_negative_tensor):
     return -torch.mean(p1+p2)
 
 
-
-def Log():
+class Log():
     def __init__(self):
         self.model_names=[]
             
@@ -25,10 +24,11 @@ def Log():
         self.test_loss_log_tmp=[]
         
         
+        
         self.trainig_acc_log=[]
         self.test_acc_log=[]
         
-        self.trainig_loss_log_tmp=[]
+        self.trainig_acc_log_tmp=[]
         self.test_acc_log_tmp=[]
         
         
@@ -63,13 +63,12 @@ def Log():
         
         plt.plot( self.trainig_loss_log, label = 'training')
         plt.plot(self.test_loss_log, label = 'test')
-        plt.tilte('loss')
+        plt.title('loss')
         plt.show()
         
         plt.plot( self.trainig_acc_log, label = 'training')
         plt.plot(self.test_acc_log, label = 'test')
-        plt.tilte('acc')
+        plt.title('acc')
         plt.show()
-        
         
         

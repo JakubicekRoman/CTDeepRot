@@ -20,16 +20,14 @@ from utils import Log
 
 
 
+
 if __name__ == '__main__':
 
     
     device = torch.device("cuda:0")
         
             
-    w_positive=np.ones(7)
-    w_negative=np.ones(7)
-    w_positive_tensor=torch.from_numpy(w_positive.astype(np.float32)).to(device)
-    w_negative_tensor=torch.from_numpy(w_negative.astype(np.float32)).to(device)
+    
     
     
     
@@ -39,22 +37,36 @@ if __name__ == '__main__':
     loader = DataLoader(split='testing',path_to_data=Config.data_path)
     testLoader= data.DataLoader(loader, batch_size=Config.test_batch_size, num_workers=Config.test_num_workers, shuffle=False,drop_last=False)
     
+    (batch,lbls)=next(iter(trainloader))
+    predicted_size=list(lbls.size())[1]
+    input_size=list(batch.size())[1]
     
     
-    model = models.resnet50(pretrained=False,num_classes=7)
-    model.conv1 = nn.Conv2d(18, 64, kernel_size=7, stride=2, padding=3, bias=False)
+    model = models.resnet50(pretrained=True)
+    model.conv1 = nn.Conv2d(input_size, 64, kernel_size=7, stride=2, padding=3, bias=False)
+    num_ftrs = model.fc.in_features
+    model.fc = torch.nn.Linear(num_ftrs, predicted_size)
     model=model.to(device)
+    
+    
+    w_positive=np.ones(predicted_size)
+    w_negative=np.ones(predicted_size)
+    w_positive_tensor=torch.from_numpy(w_positive.astype(np.float32)).to(device)
+    w_negative_tensor=torch.from_numpy(w_negative.astype(np.float32)).to(device)
+    
+    
     
     optimizer = optim.Adam(model.parameters(),lr=Config. init_lr ,betas= (0.9, 0.999),eps=1e-8,weight_decay=1e-8)
     scheduler=optim.lr_scheduler.StepLR(optimizer, Config.step_size, gamma=Config.gamma, last_epoch=-1)
     
-    
-    
+
     log = Log()
     for epoch_num in range(Config.max_epochs):
         
-        for it, (batch,lbls) in enumerate(trainloader): ### you can iterate over dataset (one epoch)
-            print(it)
+        model.train()
+        N=len(trainloader)
+        for it, (batch,lbls) in enumerate(trainloader):
+            print(str(it) + '/' + str(N))
             
             
             batch=batch.to(device)
@@ -70,17 +82,18 @@ if __name__ == '__main__':
             optimizer.step()
             
             
-            acc=torch.mean((torch.sum(lbls==(res>0.5),1)==7).type(torch.float32))
+            acc=torch.mean((torch.sum(lbls==(res>0.5),1)==predicted_size).type(torch.float32))
             
             
             log.append_train(loss,acc)
     
+
             
             
-            
-            
-            
-        for it, (batch,lbls) in enumerate(testLoader): ### you can iterate over dataset (one epoch)
+        model.eval()    
+        N=len(testLoader)
+        for it, (batch,lbls) in enumerate(testLoader): 
+            print(str(it) + '/' + str(N))
            
             batch=batch.to(device)
             lbls=lbls.to(device)
@@ -90,7 +103,7 @@ if __name__ == '__main__':
             
             loss = wce(res,lbls,w_positive_tensor,w_negative_tensor)
             
-            acc=torch.mean((torch.sum(lbls==(res>0.5),1)==7).type(torch.float32))
+            acc=torch.mean((torch.sum(lbls==(res>0.5),1)==predicted_size).type(torch.float32))
             
             log.append_test(loss,acc)
            
