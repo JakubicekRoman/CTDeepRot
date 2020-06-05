@@ -21,48 +21,48 @@ clc
 % newLayer = convolution2dLayer([7,7],64,'Stride',2,'Padding',[3,3],'Name','conv1' );
 % lgraph = replaceLayer(lgraph,'conv1',newLayer);
 
-load('Net_1.mat')
+load('Net_3.mat')
 
 %% datastore
-pathL = '\\nas1.ubmi.feec.vutbr.cz\Data\CELL\sdileni_jirina_roman_tom\CT_rotation_data_sample\training\labels_mat';
 
 trainData = readtable('labels_bin_train.xlsx','ReadVariableNames',false);
-trainData = trainData(1:3,:);
+trainData = trainData(1:10:10000,:);
 
-path = '\\nas1.ubmi.feec.vutbr.cz\Data\CELL\sdileni_jirina_roman_tom\CT_rotation_data_sample\training\';
+path = 'D:\jakubicek\Rot_detection\data\training\';
 imdsTrain = imageDatastore([path 'mean_20'],'ReadFcn',@ReaderMultiChannel);
 imdsTrain.Files = cellfun(@(x) [path 'mean_20\' x '_R1_Ch1.png'], trainData{:,1},'UniformOutput',false);
-
+pathL = 'D:\jakubicek\Rot_detection\data\training\labels_mat';
 imdsTrainL = imageDatastore([pathL '\'],'ReadFcn',@ReaderValid,'FileExtensions','.mat');
-imdsTrainL.Files = imdsTrainL.Files(1:3);
+imdsTrainL.Files = imdsTrainL.Files(1:10:10000);
 
 imdsTrainComb = combine(imdsTrain,imdsTrainL);
 
 testData = readtable('labels_bin_test.xlsx','ReadVariableNames',false);
-testData = testData(1:3,:);
+testData = testData(1:40:3000,:);
 
-path = '\\nas1.ubmi.feec.vutbr.cz\Data\CELL\sdileni_jirina_roman_tom\CT_rotation_data_sample\testing\';
+path = 'D:\jakubicek\Rot_detection\data\testing\';
 imdsTest = imageDatastore([path 'mean_20'],'ReadFcn',@ReaderMultiChannel);
 imdsTest.Files = cellfun(@(x) [path 'mean_20\' x '_R1_Ch1.png'], testData{:,1},'UniformOutput',false);
-
+pathL = 'D:\jakubicek\Rot_detection\data\testing\labels_mat';
 imdsTestL = imageDatastore([pathL '\'],'ReadFcn',@ReaderValid,'FileExtensions','.mat');
-imdsTestL.Files = imdsTestL.Files(1:3);
+imdsTestL.Files = imdsTestL.Files(1:40:3000);
 
-imdsTrainComb = combine(imdsTest,imdsTestL);
+imdsTestComb = combine(imdsTest,imdsTestL);
 
 %% training
 options = trainingOptions('adam', ...
     'LearnRateSchedule','piecewise', ...
     'LearnRateDropFactor',0.2, ...
-    'LearnRateDropPeriod',20, ...
-    'MaxEpochs',50, ...
-    'ValidationData', imdsTrainComb, ...
-    'MiniBatchSize',8, ...
+    'LearnRateDropPeriod',5, ...
+    'ValidationFrequency',50, ...
+    'MaxEpochs',40, ...
+    'L2Regularization', 0.01, ...
+    'ValidationData', imdsTestComb, ...
+    'MiniBatchSize',16, ...
     'Plots','training-progress',...
-    'Shuffle','never',...
-    'InitialLearnRate',0.0001);
+    'Shuffle','every-epoch',...
+    'InitialLearnRate',0.01);
 
 
 net = trainNetwork(imdsTrainComb,lgraph,options);
 
-% %     'ValidationData', testData, ...
