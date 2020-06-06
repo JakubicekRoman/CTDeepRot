@@ -34,7 +34,7 @@ D = dir([path_data '\*.mhd']);
 % lbl = readcell([path_save '\labels.xlsx']);
 lbl  = {};
 
-DAT = '02';
+DAT = '01';
 numAll = size(lbl,1) + 1;
 
 for pat = [1:size(D,1)]
