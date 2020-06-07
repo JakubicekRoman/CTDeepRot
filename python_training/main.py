@@ -42,7 +42,7 @@ if __name__ == '__main__':
     input_size=list(batch.size())[1]
     
     
-    model = models.resnet50(pretrained=True)
+    model = models.resnet18(pretrained=False)
     model.conv1 = nn.Conv2d(input_size, 64, kernel_size=7, stride=2, padding=3, bias=False)
     num_ftrs = model.fc.in_features
     model.fc = torch.nn.Linear(num_ftrs, predicted_size)

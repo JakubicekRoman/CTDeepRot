@@ -30,7 +30,7 @@ class DataLoader(data.Dataset):
         
         
         
-        xl_file = pd.ExcelFile(self.path + os.sep +self.split+  os.sep+'labels_bin.xlsx')
+        xl_file = pd.ExcelFile(self.path + os.sep +self.split+  os.sep+'labels.xlsx')
 
         data = pd.read_excel(xl_file,header=None)
         
@@ -42,7 +42,7 @@ class DataLoader(data.Dataset):
         file_names=data.loc[:,0].values.tolist()
         self.file_names=file_names
         
-        labels=data.loc[:,1:7].to_numpy()
+        labels=data.loc[:,1:4].to_numpy()
         self.labels=labels
         
         
@@ -59,11 +59,11 @@ class DataLoader(data.Dataset):
         
         img_list=[]
         
-        # folders = ['max_40','max_All','mean_20','mean_All','std_40','std_All']
-        # Rs= ['R3','R4','R1','R2','R5','R6']
+        folders = ['max_40','max_All','mean_20','mean_All','std_40','std_All']
+        Rs= ['R3','R4','R1','R2','R5','R6']
         
-        folders = ['mean_All','std_All']
-        Rs= ['R2','R6']
+        # folders = ['mean_All','std_All']
+        # Rs= ['R2','R6']
         
         MEANS={'max_40': [0.3649016, 0.36678955, 0.3672551],
              'max_All': [0.41011006, 0.42946368, 0.43019485],
@@ -124,11 +124,32 @@ class DataLoader(data.Dataset):
         imgs=np.stack(img_list,axis=0)
         imgs=torch.from_numpy(imgs)
         
-        lbl=self.labels[index,:]
-        lbl=torch.from_numpy(lbl)
+        
+        
+        lbl=self.labels[index,:]/180*np.pi
+        
+        Rx=np.array([[1,0,0],
+                     [0,np.cos(lbl[0]),-np.sin(lbl[0])],
+                     [0,np.sin(lbl[0]),np.cos(lbl[0])]])
+        
+        Ry=np.array([[np.cos(lbl[1]),0,np.sin(lbl[1])],
+                     [0,1,0],
+                     [-np.sin(lbl[1]),0,np.cos(lbl[1])]])
+        
+        Rz=np.array([[np.cos(lbl[2]),-np.sin(lbl[2]),0],
+                     [np.sin(lbl[2]),np.cos(lbl[2]),0],
+                     [0,0,1]])
+        
+        R=Rz@Ry@Rx
+        lbl_vec=np.ones((3,1))
+        
+        lbl2=np.round(R@lbl_vec)[:,0]
+        
+        lbl2[lbl2==-1]=0
+        
+        lbl=torch.from_numpy(lbl2)
             
-        
-        
+
         return imgs,lbl
         
         
