@@ -13,8 +13,8 @@ class Config:
     # test_num_workers=0
     
     
-    max_epochs = 65
-    step_size=30
+    max_epochs = 125
+    step_size=60
     gamma=0.1
     init_lr=0.01
     
