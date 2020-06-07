@@ -72,14 +72,16 @@ class DataLoader(data.Dataset):
 
         elif self.split=='testing':
             a,b,c=self.test_vec[index,:]
-        
+            a=np.array([a])
+            b=np.array([b])
+            c=np.array([c])
             
     
         img=np.rot90(img,a,axes=(0,1))
         img=np.rot90(img,b,axes=(0,2))
         img=np.rot90(img,c,axes=(1,2))
         
-        lbls_angle=np.concatenate((a,b,c))*180
+        lbls_angle=np.concatenate((a,b,c))*90
 
         
         img=np.expand_dims(img, axis=0).copy()
