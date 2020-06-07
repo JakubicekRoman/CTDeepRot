@@ -9,6 +9,8 @@ import torch.nn.functional as F
 import torch.optim as optim
 from dataloader import DataLoader
 
+from simple_3d_net import Simple_3d_net
+
 from utils import wce
 
 
@@ -42,10 +44,12 @@ if __name__ == '__main__':
     input_size=list(batch.size())[1]
     
     
-    model = models.resnet18(pretrained=False)
-    model.conv1 = nn.Conv2d(input_size, 64, kernel_size=7, stride=2, padding=3, bias=False)
-    num_ftrs = model.fc.in_features
-    model.fc = torch.nn.Linear(num_ftrs, predicted_size)
+    # model = models.resnet18(pretrained=False)
+    # model.conv1 = nn.Conv2d(input_size, 64, kernel_size=7, stride=2, padding=3, bias=False)
+    # num_ftrs = model.fc.in_features
+    # model.fc = torch.nn.Linear(num_ftrs, predicted_size)
+    
+    model=Simple_3d_net(input_size=1,output_size=predicted_size)
     model=model.to(device)
     
     

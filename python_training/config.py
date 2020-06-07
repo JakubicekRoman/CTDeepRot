@@ -1,11 +1,11 @@
 class Config:
     
-    data_path='D:\jakubicek\Rot_detection\data'
+    data_path='D:\jakubicek\Rot_detection\data_3d_128'
     
     
-    train_batch_size = 32
-    train_num_workers=8
-    test_batch_size = 32
+    train_batch_size = 8
+    train_num_workers=4
+    test_batch_size = 8
     test_num_workers=2
     
     
