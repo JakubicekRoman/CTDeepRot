@@ -1,11 +1,11 @@
 %% validace nets
 
 clear all
-close all
+% close all
 clc
 
 % load('Trained_nets\Net_1_2.mat')
-load('Trained_nets\Net_test.mat')
+load('Trained_nets\Net_1_regr_8.mat')
 
 %% datastore
 
@@ -38,35 +38,66 @@ load('Trained_nets\Net_test.mat')
 % labels = imdsTestComb.UnderlyingDatastores{2}.Files;
 % labels = cellfun(@(x) ReaderValid(x), labels,'UniformOutput',false);
 
-imdsValid = imdsTrainComb.UnderlyingDatastores{1};
-labels = imdsTrainComb.UnderlyingDatastores{2}.Files;
+imdsValid1 = imdsTrainComb.UnderlyingDatastores{1};
+labels1 = imdsTrainComb.UnderlyingDatastores{2}.Files;
 % labels = cellfun(@(x) ReaderValid(x), labels,'UniformOutput',false);
-labels = cellfun(@(x) ReaderValid_class(x), labels,'UniformOutput',false);
+labels1 = cellfun(@(x) ReaderValid(x), labels1,'UniformOutput',false);
+
+imdsValid2 = imdsTestComb.UnderlyingDatastores{1};
+labels2 = imdsTestComb.UnderlyingDatastores{2}.Files;
+% labels = cellfun(@(x) ReaderValid(x), labels,'UniformOutput',false);
+labels2 = cellfun(@(x) ReaderValid(x), labels2,'UniformOutput',false);
 
 %% Prediction
 
-pred = predict(net, imdsValid);
+pred1 = predict(net, imdsValid1);
+pred2 = predict(net, imdsValid2);
 
 %% statistic
 
-% i=1;ACC=[];PRAH=[];
-% for prah = 0:0.01:1
-%     ACC(i) = sum( sum( (testData{:,2:7} == (pred<=prah)),2)==6) ./ size(pred,1) *100;
-%     PRAH(i) = prah;
-%     i=i+1;
-% end
-
-GT = cell2mat(labels);
-% pred = round(pred);
-
-RMSE = sqrt( sum(((GT - pred).^2),'All')/(numel(GT)) )
+GT = cell2mat(labels1);
+i=1;ACC1=[];PRAH1=[];
+for prah = -1:0.01:1
+    Pred = pred1;Pred(pred1<prah)=-1;Pred(pred1>=prah)=1;
+    ACC1(i) = sum( sum( (GT == Pred) ,2)==3) ./ size(Pred,1) *100;
+    PRAH1(i) = prah;
+    i=i+1;
+end
+RMSE = sqrt( sum(((GT - pred1).^2),'All')/(numel(GT)) )
 
 
-% ACC = sum( sum( (GT == (pred)),2)==6) ./ size(pred,1) *100
-ACC = sum( sum( (GT == round(pred)),2)==6) ./ size(pred,1) *100
+GT = cell2mat(labels2);
+i=1;ACC2=[];PRAH2=[];
+for prah = -1:0.01:1
+    Pred = pred2;Pred(pred2<prah)=-1;Pred(pred2>=prah)=1;
+    ACC2(i) = sum( sum( (GT == Pred) ,2)==3) ./ size(Pred,1) *100;
+    PRAH2(i) = prah;
+    i=i+1;
+end
+RMSE = sqrt( sum(((GT - pred2).^2),'All')/(numel(GT)) )
 
+figure
+plot(PRAH1,ACC1,'r')
+hold on
+plot(PRAH2,ACC2,'b')
 
-% figure
-% plot(PRAH,ACC)
+pred2(pred2>0)=1;
+pred2(pred2<0)=-1;
+m=0;Labl=zeros(1,size(pred2,1));
+for i=[-1,1]
+    for ii=[-1,1]
+        for iii=[-1,1]
+            m = m+1;
+            ind5=[];
+            vec = [i,ii,iii];
+                for k = 1:size(GT,1)
+                   ind5(k) = sum(GT(k,:) == vec)==3;
+                end
+            Labl(logical(ind5)) = m;
+        end
+    end
+end
 
-
+corect = sum( (GT == pred2) ,2)==3
+figure
+hist(Labl(corect),8)
