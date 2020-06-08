@@ -43,6 +43,7 @@ class DataLoader(data.Dataset):
         state=np.random.get_state()
         np.random.seed(42)
         self.test_vec=np.random.randint(0, 4, size=(len(self.file_names),3))
+        self.test_flip=np.random.randint(0, 2, size=(len(self.file_names),1))
         np.random.set_state(state)
         
     
@@ -60,26 +61,61 @@ class DataLoader(data.Dataset):
         img=np.load(file_name)
         img=img.astype(np.float32)
         img=(img-MEAN)/STD
+        
      
         if self.split=='training':
             a=torch.randint(4,(1,1)).view(-1).numpy()
             b=torch.randint(4,(1,1)).view(-1).numpy()
             c=torch.randint(4,(1,1)).view(-1).numpy()
-            
+            flip=torch.randint(2,(1,1)).view(-1).numpy()
             
 
 
 
         elif self.split=='testing':
             a,b,c=self.test_vec[index,:]
+            flip=self.test_flip[index,0]
             a=np.array([a])
             b=np.array([b])
             c=np.array([c])
+            flip=np.array([flip])
             
-    
+        if flip:
+            img=img[:,:,::-1]
+            
+        # plt.imshow(np.max(img,axis=0))
+        # plt.show()
+        # plt.imshow(np.max(img,axis=1))
+        # plt.show()
+        # plt.imshow(np.max(img,axis=2))
+        # plt.show()
+            
         img=np.rot90(img,a,axes=(0,1))
         img=np.rot90(img,b,axes=(0,2))
         img=np.rot90(img,c,axes=(1,2))
+        
+        if self.split=='training':
+            max_mult_change=0.3
+            mult_change=1+torch.rand(1).numpy()[0]*2*max_mult_change-max_mult_change
+            img=img*mult_change
+            
+                
+            max_add_change=0.3
+            add_change=torch.rand(1).numpy()[0]*2*max_add_change-max_add_change
+            img=img+add_change
+            
+            
+            max_cicrcshift_change=30
+            cicrcshift_change=torch.randint(2*max_cicrcshift_change,(3,1)).view(-1).numpy()-max_cicrcshift_change
+            img=np.roll(img,cicrcshift_change[0],axis=0)
+            img=np.roll(img,cicrcshift_change[1],axis=1)
+            img=np.roll(img,cicrcshift_change[2],axis=2)
+            
+            
+            # max_resize_change=0.3
+            # add_change=torch.rand(1).numpy()[0]*2*max_add_change-max_add_change
+            
+
         
         lbls_angle=np.concatenate((a,b,c))*90
 

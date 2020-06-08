@@ -9,12 +9,12 @@ class Config:
     test_num_workers=2
     
     
-    # train_num_workers=0
-    # test_num_workers=0
+    train_num_workers=0
+    test_num_workers=0
     
     
-    max_epochs = 125
-    step_size=60
+    max_epochs = 110
+    step_size=100
     gamma=0.1
     init_lr=0.01
     
