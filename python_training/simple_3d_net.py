@@ -6,7 +6,7 @@ from torch.nn import init
 import matplotlib.pyplot as plt
 
 class myConv(nn.Module):
-    def __init__(self, in_size, out_size,filter_size=3,stride=1,pad=None,do_batch=1,dov=0):
+    def __init__(self, in_size, out_size,filter_size=4,stride=1,pad=None,do_batch=1,dov=0):
         super().__init__()
         
         pad=int((filter_size-1)/2)

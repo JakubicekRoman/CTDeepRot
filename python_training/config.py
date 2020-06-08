@@ -5,16 +5,16 @@ class Config:
     
     train_batch_size = 8
     train_num_workers=4
-    test_batch_size = 8
+    test_batch_size = 4
     test_num_workers=2
     
     
-    train_num_workers=0
-    test_num_workers=0
+    # train_num_workers=0
+    # test_num_workers=0
     
     
-    max_epochs = 110
-    step_size=100
+    max_epochs = 250
+    step_size=120
     gamma=0.1
     init_lr=0.01
     

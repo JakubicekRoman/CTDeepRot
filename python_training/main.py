@@ -122,7 +122,7 @@ if __name__ == '__main__':
 
 
 
-    torch.save(model.state_dict(), '3dmodel_noflip.pt')
+    torch.save(model.state_dict(), '3dmodel_augmentace.pt')
     
     
     

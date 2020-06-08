@@ -95,25 +95,29 @@ class DataLoader(data.Dataset):
         img=np.rot90(img,c,axes=(1,2))
         
         if self.split=='training':
-            max_mult_change=0.3
+            max_mult_change=0.2
             mult_change=1+torch.rand(1).numpy()[0]*2*max_mult_change-max_mult_change
             img=img*mult_change
             
                 
-            max_add_change=0.3
+            max_add_change=0.2
             add_change=torch.rand(1).numpy()[0]*2*max_add_change-max_add_change
             img=img+add_change
             
             
-            max_cicrcshift_change=30
+            max_cicrcshift_change=20
             cicrcshift_change=torch.randint(2*max_cicrcshift_change,(3,1)).view(-1).numpy()-max_cicrcshift_change
             img=np.roll(img,cicrcshift_change[0],axis=0)
             img=np.roll(img,cicrcshift_change[1],axis=1)
             img=np.roll(img,cicrcshift_change[2],axis=2)
             
-            
+            # shape=img.shape
             # max_resize_change=0.3
-            # add_change=torch.rand(1).numpy()[0]*2*max_add_change-max_add_change
+            # max_resize_change=np.round(max_resize_change*shape)
+            # shape_new=shape*torch.rand(3).numpy()[0]*2*max_resize_change-max_resize_change
+            # new_img=np.zeros(shape_new,dtype=np.float32)
+            # min_shape=np.array([np.min([shape[0],shape_new[0]]),np.min([shape[1],shape_new[1]]),np.min([shape[2],shape_new[2]])] )
+            # new_img[]
             
 
         
