@@ -95,17 +95,17 @@ class DataLoader(data.Dataset):
         img=np.rot90(img,c,axes=(1,2))
         
         if self.split=='training':
-            max_mult_change=0.2
+            max_mult_change=0.1
             mult_change=1+torch.rand(1).numpy()[0]*2*max_mult_change-max_mult_change
             img=img*mult_change
             
                 
-            max_add_change=0.2
+            max_add_change=0.1
             add_change=torch.rand(1).numpy()[0]*2*max_add_change-max_add_change
             img=img+add_change
             
             
-            max_cicrcshift_change=20
+            max_cicrcshift_change=10
             cicrcshift_change=torch.randint(2*max_cicrcshift_change,(3,1)).view(-1).numpy()-max_cicrcshift_change
             img=np.roll(img,cicrcshift_change[0],axis=0)
             img=np.roll(img,cicrcshift_change[1],axis=1)

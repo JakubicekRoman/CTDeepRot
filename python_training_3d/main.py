@@ -50,6 +50,7 @@ if __name__ == '__main__':
     # model.fc = torch.nn.Linear(num_ftrs, predicted_size)
     
     model=Simple_3d_net(input_size=1,output_size=predicted_size)
+    model.load_state_dict(torch.load('3dmodel.pt'))
     model=model.to(device)
     
     
