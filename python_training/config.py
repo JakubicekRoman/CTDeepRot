@@ -16,7 +16,7 @@ class Config:
     max_epochs = 65
     step_size=30
     gamma=0.1
-    init_lr=0.01
+    init_lr=0.001
     
     
     

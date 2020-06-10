@@ -1,7 +1,7 @@
 clc;clear all;close all;
 
 
-path='D:\jakubicek\Rot_detection\data_3d';
+path='Z:\CELL\sdileni_jirina_roman_tom\CT_rotation_data';
 
 
 output_size=128;
@@ -17,7 +17,7 @@ for file_num=1:length(file_names)
     file_name=file_names{file_num};
     
     file_name_save=file_name;
-    file_name_save=replace(file_name_save,'data_3d',['data_3d_' num2str(output_size) '_mat']);
+    file_name_save=replace(file_name_save,'CT_rotation_data',['CT_rotation_data_mat_' num2str(output_size)]);
     file_name_save=replace(file_name_save,'.mhd','.mat');
     [filepath,name,ext] = fileparts(file_name_save);
     mkdir(filepath)

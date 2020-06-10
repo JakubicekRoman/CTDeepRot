@@ -50,7 +50,7 @@ if __name__ == '__main__':
     # model.fc = torch.nn.Linear(num_ftrs, predicted_size)
     
     model=Simple_3d_net(input_size=1,output_size=predicted_size)
-    model.load_state_dict(torch.load('3dmodel.pt'))
+    # model.load_state_dict(torch.load('3dmodel.pt'))
     model=model.to(device)
     
     
@@ -78,17 +78,19 @@ if __name__ == '__main__':
             lbls=lbls.to(device)
             
             res=model(batch)
-            res=torch.sigmoid(res)
             
-            loss = wce(res,lbls,w_positive_tensor,w_negative_tensor)
+            # res=torch.sigmoid(res)
+            # loss = wce(res,lbls,w_positive_tensor,w_negative_tensor)
+            
+            loss=torch.mean((res-lbls)**2)
             
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
             
             
-            acc=torch.mean((torch.sum(lbls==(res>0.5),1)==predicted_size).type(torch.float32))
-            
+            # acc=torch.mean((torch.sum(lbls==(res>0.5),1)==predicted_size).type(torch.float32))
+            acc=torch.mean((torch.sum((lbls>0)==(res>0),1)==predicted_size).type(torch.float32))
             
             log.append_train(loss,acc)
     
@@ -104,11 +106,14 @@ if __name__ == '__main__':
             lbls=lbls.to(device)
             
             res=model(batch)
-            res=torch.sigmoid(res)
             
-            loss = wce(res,lbls,w_positive_tensor,w_negative_tensor)
+            # res=torch.sigmoid(res)
+            # loss = wce(res,lbls,w_positive_tensor,w_negative_tensor)
             
-            acc=torch.mean((torch.sum(lbls==(res>0.5),1)==predicted_size).type(torch.float32))
+            loss=torch.mean((res-lbls)**2)
+            
+            # acc=torch.mean((torch.sum(lbls==(res>0.5),1)==predicted_size).type(torch.float32))
+            acc=torch.mean((torch.sum((lbls>0)==(res>0),1)==predicted_size).type(torch.float32))
             
             log.append_test(loss,acc)
            

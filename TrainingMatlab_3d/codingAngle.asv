@@ -1,13 +1,13 @@
-function [angle] = codingAngle(x)
+% function [angle] = codingAngle(x)
+
+x=[0,*9,0];
 
 
-% x=[0,0,0];
 
 Rz =    [cosd(x(3)),-sind(x(3)),0,0;...
         sind(x(3)),cosd(x(3)),0,0;...
         0,0,1,0;...
         0,0,0,1];
-    
 Ry = [cosd(x(2)), 0, sind(x(2)),0;...
     0,1,0,0;...
     -sind(x(2)),0,cosd(x(2)),0;...
@@ -24,5 +24,5 @@ angle = R * [1,1,1,1]';
 angle = angle(1:3);
 
 
-% angle
+angle
 % angle(angle==-1)=0;

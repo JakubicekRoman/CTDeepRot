@@ -32,7 +32,13 @@ for file_num=1:length(files)
                         aa=1;
                         save(tmp,'aa')
                         unique_rots=[unique_rots,rot_vec];
+                        
+                        rot_vec
+                        [a,b,c]
+                        
+                        drawnow;
                     end
+                    
                 end
             end
         end
