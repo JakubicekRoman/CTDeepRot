@@ -23,7 +23,7 @@ class Config:
     gamma=0.1
     init_lr=0.001
     
-    lvl1_size=4
+    lvl1_size=6
     
     
     
