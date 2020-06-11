@@ -39,7 +39,7 @@ class myConv(nn.Module):
 class Simple_3d_net(nn.Module):
     
     
-    def __init__(self, input_size,output_size,levels=5,lvl1_size=3):
+    def __init__(self, input_size,output_size,levels=5,lvl1_size=4):
         super().__init__()
         self.lvl1_size=lvl1_size
         self.levels=levels

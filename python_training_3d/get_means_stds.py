@@ -23,16 +23,23 @@ import pandas as pd
 from skimage.transform import resize
 
 
+xl_file = pd.ExcelFile(Config.data_path + os.sep+'ListOfData.xlsx')
+data = pd.read_excel(xl_file,header=None)
 
+folders=data.loc[:,0].tolist()
+names=data.loc[:,1].tolist()
+file_names=[]
+for folder,name in zip(folders,names):
+    
+    file_names.append((Config.data_path + os.sep + folder.split('\\')[-1] + os.sep + name).replace('.mhd','.npy'))
 
-
-file_names=glob.glob(Config.data_path + os.sep + 'Data_raw_train' + os.sep + '*.npy', recursive=True)
 
 
 meas_tmp=[]
 stds_tmp=[]
 
 for i,file_name in enumerate(file_names[::3]):
+    print(i)
 
     tmp=np.load(file_name)
     tmp=tmp.astype(np.float32)

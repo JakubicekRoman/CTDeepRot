@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+from config import Config
 
 
 def wce(res,lbls,w_positive_tensor,w_negative_tensor):
@@ -71,6 +72,14 @@ class Log():
         plt.title('acc')
         plt.show()
         
+    def save_plot(self,file_name):    
+        
+        plt.plot( self.trainig_acc_log, label = 'training')
+        plt.plot(self.test_acc_log, label = 'test')
+        plt.title('acc')
+        plt.savefig(plt.savefig(file_name))
+        
+        
         
 
 import SimpleITK as sitk
@@ -88,3 +97,31 @@ def load_itk(filename):
     spacing = np.array(list(reversed(itkimage.GetSpacing())))
 
     return ct_scan, origin, spacing
+
+
+def angle2vec(angles):
+    
+    
+    lbl=angles/180*np.pi
+        
+    Rx=np.array([[1,0,0],
+                 [0,np.cos(lbl[0]),-np.sin(lbl[0])],
+                 [0,np.sin(lbl[0]),np.cos(lbl[0])]])
+    
+    Ry=np.array([[np.cos(lbl[1]),0,np.sin(lbl[1])],
+                 [0,1,0],
+                 [-np.sin(lbl[1]),0,np.cos(lbl[1])]])
+    
+    Rz=np.array([[np.cos(lbl[2]),-np.sin(lbl[2]),0],
+                 [np.sin(lbl[2]),np.cos(lbl[2]),0],
+                 [0,0,1]])
+    
+    R=Rz@Ry@Rx
+    lbl_vec=np.ones((3,1))
+    
+    return np.round(R@lbl_vec)[:,0]
+    
+
+def get_lr(optimizer):
+    for param_group in optimizer.param_groups:
+        return param_group['lr']

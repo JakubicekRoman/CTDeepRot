@@ -20,6 +20,10 @@ from config import Config
 
 from utils import Log
 
+from utils import get_lr
+
+import pickle
+
 
 
 
@@ -29,8 +33,10 @@ if __name__ == '__main__':
     device = torch.device("cuda:0")
         
             
-    
-    
+    try:
+        os.mkdir(Config.tmp_save_dir)
+    except:
+        pass
     
     
     loader = DataLoader(split='training',path_to_data=Config.data_path)
@@ -44,12 +50,9 @@ if __name__ == '__main__':
     input_size=list(batch.size())[1]
     
     
-    # model = models.resnet18(pretrained=False)
-    # model.conv1 = nn.Conv2d(input_size, 64, kernel_size=7, stride=2, padding=3, bias=False)
-    # num_ftrs = model.fc.in_features
-    # model.fc = torch.nn.Linear(num_ftrs, predicted_size)
+
     
-    model=Simple_3d_net(input_size=1,output_size=predicted_size)
+    model=Simple_3d_net(input_size=1,output_size=predicted_size,lvl1_size=Config.lvl1_size)
     # model.load_state_dict(torch.load('3dmodel.pt'))
     model=model.to(device)
     
@@ -71,7 +74,7 @@ if __name__ == '__main__':
         model.train()
         N=len(trainloader)
         for it, (batch,lbls) in enumerate(trainloader):
-            print(str(it) + '/' + str(N))
+            # print(str(it) + '/' + str(N))
             
             
             batch=batch.to(device)
@@ -79,8 +82,7 @@ if __name__ == '__main__':
             
             res=model(batch)
             
-            # res=torch.sigmoid(res)
-            # loss = wce(res,lbls,w_positive_tensor,w_negative_tensor)
+
             
             loss=torch.mean((res-lbls)**2)
             
@@ -88,8 +90,7 @@ if __name__ == '__main__':
             loss.backward()
             optimizer.step()
             
-            
-            # acc=torch.mean((torch.sum(lbls==(res>0.5),1)==predicted_size).type(torch.float32))
+
             acc=torch.mean((torch.sum((lbls>0)==(res>0),1)==predicted_size).type(torch.float32))
             
             log.append_train(loss,acc)
@@ -100,19 +101,16 @@ if __name__ == '__main__':
         model.eval()    
         N=len(testLoader)
         for it, (batch,lbls) in enumerate(testLoader): 
-            print(str(it) + '/' + str(N))
+            # print(str(it) + '/' + str(N))
            
             batch=batch.to(device)
             lbls=lbls.to(device)
             
             res=model(batch)
             
-            # res=torch.sigmoid(res)
-            # loss = wce(res,lbls,w_positive_tensor,w_negative_tensor)
-            
+
             loss=torch.mean((res-lbls)**2)
             
-            # acc=torch.mean((torch.sum(lbls==(res>0.5),1)==predicted_size).type(torch.float32))
             acc=torch.mean((torch.sum((lbls>0)==(res>0),1)==predicted_size).type(torch.float32))
             
             log.append_test(loss,acc)
@@ -122,13 +120,27 @@ if __name__ == '__main__':
             
         log.save_and_reset()
          
+        
+        
+        info= str(epoch_num) + '_' + str(get_lr(optimizer)) + '_train_'  + str(log.test_acc_log[-1]) + '_valid_' + str(log.trainig_acc_log[-1]) 
+        print(info)
         log.plot()
+        
         
         scheduler.step()
 
-
-
-    torch.save(model.state_dict(), '3dmodel_augmentace.pt')
+        tmp_file_name= Config.tmp_save_dir + os.sep +Config.model_name + info
+        torch.save(model.state_dict(),tmp_file_name +  '_model.pt')
+        log.save_plot(tmp_file_name +  '_plot.png')
+        
+        with open(tmp_file_name +  '_log.pkl', 'wb') as f:
+            pickle.dump(log, f)
+            
+        with open(tmp_file_name +  '_config.pkl', 'wb') as f:
+            pickle.dump(Config(), f)
+        
+        
+        
     
     
     
