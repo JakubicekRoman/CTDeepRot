@@ -2,10 +2,10 @@ clear all
 close all
 clc
 
-path_data = ['C:\Data\Jakubicek\CTDeepRot_data\training'];
+path_data = ['C:\Data\Jakubicek\CTDeepRot_data\Datasets'];
 % path_data = ['C:\Data\Jakubicek\CTDeepRot_data\testing'];
 
-path_save = 'C:\Data\Jakubicek\CTDeepRot_data\training\labels_mat';
+path_save = 'C:\Data\Jakubicek\CTDeepRot_data\Datasets\labels_mat';
 % path_save = 'C:\Data\Jakubicek\CTDeepRot_data\testing\labels_mat';
 mkdir(path_save)
 
