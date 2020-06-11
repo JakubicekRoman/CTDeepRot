@@ -1,6 +1,6 @@
 class Config:
     
-    data_path='D:\jakubicek\Rot_detection\CT_rotation_data_npy_128'
+    data_path='../../CT_rotation_data_npy_128'
     
     tmp_save_dir='../../models_python'
     
