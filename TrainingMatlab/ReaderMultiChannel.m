@@ -1,8 +1,8 @@
 function [im] = ReaderMultiChannel(filename)
 
 % folders = {'max_40','max_All','mean_20','mean_All','std_40','std_All'};
-folders = {'mean_All','std_All','max_40'};
-R = {'R2','R6','R3'};
+folders = {'mean_All','std_All','max_All'};
+R = {'R2','R6','R4'};
 % R = {'R3','R4','R1','R2','R5','R6'};
 CH = {'Ch1','Ch2','Ch3'};
 
