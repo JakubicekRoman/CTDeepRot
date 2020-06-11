@@ -77,7 +77,7 @@ class Log():
         plt.plot( self.trainig_acc_log, label = 'training')
         plt.plot(self.test_acc_log, label = 'test')
         plt.title('acc')
-        plt.savefig(plt.savefig(file_name))
+        plt.savefig(file_name)
         
         
         
