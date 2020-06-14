@@ -48,12 +48,12 @@ names_test=names(round(0.8*length(names))+1:end-20);
 
 
 imdsTrain = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData3D);
-imdsTrainL = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData3D_lbl);
+imdsTrainL = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
 imdsTrainComb = combine(imdsTrain,imdsTrainL);
 
 
 imdsTest = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData3D);
-imdsTestL = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData3D_lbl);
+imdsTestL = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
 imdsTestComb = combine(imdsTrain,imdsTestL);
 
 

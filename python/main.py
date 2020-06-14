@@ -59,7 +59,7 @@ if __name__ == '__main__':
     
     if Config.is3d:
         model=Small_resnet3D(input_size=1,output_size=predicted_size,lvl1_size=Config.lvl1_size)
-        # model.load_state_dict(torch.load('3dmodel.pt')) 
+        # model.load_state_dict(torch.load('3dmodel.pt◘')) 
     else:
         model = models.resnet50(pretrained=Config.pretrained)
         model.conv1 = nn.Conv2d(input_size, 64, kernel_size=7, stride=2, padding=3, bias=False)

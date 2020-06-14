@@ -1,4 +1,4 @@
-function [data] = ReadData3D_lbl(name)
+function [data] = ReadData_lbl(name)
 
 file_name=name(1:end-20);
 rotations=name(end-18:end-4);
