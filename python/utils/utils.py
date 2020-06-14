@@ -1,17 +1,15 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
-from config import Config
 
 
-def wce(res,lbls,w_positive_tensor,w_negative_tensor):
+def ce(res,lbls):
     ## weighted crossetropy - weigths are for positive and negative 
     res_c = torch.clamp(res,min=1e-6,max=1-1e-6)
             
-    p1=lbls*torch.log(res_c)*w_positive_tensor
-    p2=(1-lbls)*torch.log(1-res_c)*w_negative_tensor
+    p1=lbls*torch.log(res_c)
     
-    return -torch.mean(p1+p2)
+    return -torch.mean(p1)
 
 
 class Log():
@@ -35,13 +33,13 @@ class Log():
         
         
     def append_train(self,loss,acc):
-        self.trainig_loss_log_tmp.append(loss.detach().cpu().numpy())
-        self.trainig_acc_log_tmp.append(acc.detach().cpu().numpy())
+        self.trainig_loss_log_tmp.append(loss)
+        self.trainig_acc_log_tmp.append(acc)
         
         
     def append_test(self,loss,acc):
-        self.test_loss_log_tmp.append(loss.detach().cpu().numpy())
-        self.test_acc_log_tmp.append(acc.detach().cpu().numpy())
+        self.test_loss_log_tmp.append(loss)
+        self.test_acc_log_tmp.append(acc)
         
         
     def save_and_reset(self):
@@ -80,28 +78,6 @@ class Log():
         plt.savefig(file_name)
         
 
-def angle2vec(angles):
-    
-    
-    lbl=angles/180*np.pi
-        
-    Rx=np.array([[1,0,0],
-                 [0,np.cos(lbl[0]),-np.sin(lbl[0])],
-                 [0,np.sin(lbl[0]),np.cos(lbl[0])]])
-    
-    Ry=np.array([[np.cos(lbl[1]),0,np.sin(lbl[1])],
-                 [0,1,0],
-                 [-np.sin(lbl[1]),0,np.cos(lbl[1])]])
-    
-    Rz=np.array([[np.cos(lbl[2]),-np.sin(lbl[2]),0],
-                 [np.sin(lbl[2]),np.cos(lbl[2]),0],
-                 [0,0,1]])
-    
-    R=Rz@Ry@Rx
-    lbl_vec=np.ones((3,1))
-    
-    return np.round(R@lbl_vec)[:,0]
-    
 
 def get_lr(optimizer):
     for param_group in optimizer.param_groups:

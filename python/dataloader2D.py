@@ -20,30 +20,51 @@ import pandas as pd
 
 from skimage.transform import resize
 
+from utils.rotate_fcns import rotate_2d,rotate_3d,flip_2d
 
-class DataLoader(data.Dataset):
+
+class DataLoader2D(data.Dataset):
     
     def __init__(self, split,path_to_data):
     
         self.split=split
         self.path=path_to_data
         
+        data = pd.read_csv("utils/rot_dict_unique.csv") 
+        self.rots_table=data.loc[:,:].to_numpy()
         
-        
-        xl_file = pd.ExcelFile(self.path + os.sep +self.split+  os.sep+'labels.xlsx')
-
+        xl_file = pd.ExcelFile(self.path + os.sep+'ListOfData.xlsx')
         data = pd.read_excel(xl_file,header=None)
         
-        if self.split=='testing':
-            data=data.loc[::11,:]
+        folders=data.loc[:,0].tolist()
+        names=data.loc[:,1].tolist()
+        file_names=[]
+        for folder,name in zip(folders,names):
+            
+            file_names.append((self.path + os.sep + folder.split('\\')[-1] + os.sep + name).replace('.mhd',''))
+        
+        
+            
+
+        if self.split=='training':
+            file_names=file_names[:int(len(file_names)*0.8)]
+            
+        elif self.split=='testing':
+            file_names=file_names[int(len(file_names)*0.8):-20]
             
         
-        
-        file_names=data.loc[:,0].values.tolist()
-        self.file_names=file_names
-        
-        labels=data.loc[:,1:4].to_numpy()
-        self.labels=labels
+        self.file_names=[]
+        self.vec=[]
+        self.flip=[]
+        self.lbls=[]
+        for file in file_names:
+            for flip in [0,1]:
+                for unique_rot_num in range(self.rots_table.shape[0]):
+                    
+                    self.file_names.append(file)
+                    self.vec.append(self.rots_table[unique_rot_num,:])
+                    self.flip.append(flip)
+                    self.lbls.append(unique_rot_num)
         
         
         
@@ -57,63 +78,47 @@ class DataLoader(data.Dataset):
         
         file_name=self.file_names[index]
         
+        r=self.vec[index][0:3]
+        flip=self.flip[index]
+        flip=np.array([flip])
+        
         img_list=[]
         
-        folders = ['max_40','max_All','mean_20','mean_All','std_40','std_All']
-        Rs= ['R3','R4','R1','R2','R5','R6']
+
         
-        # folders = ['mean_All','std_All']
-        # Rs= ['R2','R6']
+        MEANS={'mean': [0.31656316, 0.31815434, 0.319901],
+             'max': [0.48267424, 0.38830274, 0.37235856],
+             'std': [0.40330338, 0.29134238, 0.23324046]}
         
-        MEANS={'max_40': [0.3649016, 0.36678955, 0.3672551],
-             'max_All': [0.41011006, 0.42946368, 0.43019485],
-             'mean_20': [0.23211582, 0.23323949, 0.23327705],
-             'mean_All': [0.34926993, 0.3492299, 0.34914622],
-             'std_40': [0.15002619, 0.14761001, 0.14778571],
-             'std_All': [0.2950393, 0.31131673, 0.31132057]}
+        STDS={'mean': [0.11143641, 0.18203282, 0.20284137],
+             'max': [0.15405223, 0.2034344, 0.22770199],
+             'std': [0.11865007, 0.16135372, 0.15640634]}
         
-        STDS={'max_40': [0.18549794, 0.17933437, 0.17979342],
-             'max_All': [0.19559579, 0.1914579, 0.19143115],
-             'mean_20': [0.15050271, 0.14773907, 0.14823063],
-             'mean_All': [0.17176014, 0.16127543, 0.1615369],
-             'std_40': [0.12240985, 0.11806898, 0.1184011],
-             'std_All': [0.13937637, 0.13372615, 0.13382766]}
+        folders=['mean','max','std']
         
-        for folder,R in zip(folders,Rs):
+        for folder in folders:
             
             for k in range(3):
-                tmp=imread(self.path + os.sep +self.split +  os.sep +  folder +  os.sep + file_name  +'_' + R + '_Ch' + str(k+1)  + '.png')
+                tmp=imread(file_name + '_' + folder + '_'+ str(k+1)  +'.png' )
                 tmp=tmp.astype(np.float32)/255
                 tmp=(tmp-MEANS[folder][k])/(STDS[folder][k])
                 img_list.append(tmp)
                 
-                
-                
 
+            
         # if self.split=='training':
-        #     resize_factor=0.2
             
-            
-    
-            
-        for k in range(len(img_list)):
-            
-            img_list[k]=resize(img_list[k],[224,224])
-            
-            
-        if self.split=='training':
-            
-            max_mult_change=0.2
-            for k in range(len(img_list)):
-                mult_change=1+torch.rand(1).numpy()[0]*2*max_mult_change-max_mult_change
-                img_list[k]=img_list[k]*mult_change
+        #     max_mult_change=0.3
+        #     for k in range(len(img_list)):
+        #         mult_change=1+torch.rand(1).numpy()[0]*2*max_mult_change-max_mult_change
+        #         img_list[k]=img_list[k]*mult_change
                 
                 
                 
-            max_add_change=0.1
-            for k in range(len(img_list)):
-                add_change=torch.rand(1).numpy()[0]*2*max_add_change-max_add_change
-                img_list[k]=img_list[k]+add_change
+        #     max_add_change=0.3
+        #     for k in range(len(img_list)):
+        #         add_change=torch.rand(1).numpy()[0]*2*max_add_change-max_add_change
+        #         img_list[k]=img_list[k]+add_change
             
         
         
@@ -121,31 +126,23 @@ class DataLoader(data.Dataset):
 
             
   
-        imgs=np.stack(img_list,axis=0)
-        imgs=torch.from_numpy(imgs)
+        imgs=np.stack(img_list,axis=2)
+        for k in range(0,9,3):
+            if flip==1:
+                imgs[:,:,k:k+3]=flip_2d(imgs[:,:,k:k+3])
+            
+            imgs[:,:,k:k+3]=rotate_2d(imgs[:,:,k:k+3],r)
         
+
+
+        imgs=torch.from_numpy(imgs.copy())
         
+        imgs=imgs.permute(2,0,1)
+
         
-        lbl=self.labels[index,:]/180*np.pi
-        
-        Rx=np.array([[1,0,0],
-                     [0,np.cos(lbl[0]),-np.sin(lbl[0])],
-                     [0,np.sin(lbl[0]),np.cos(lbl[0])]])
-        
-        Ry=np.array([[np.cos(lbl[1]),0,np.sin(lbl[1])],
-                     [0,1,0],
-                     [-np.sin(lbl[1]),0,np.cos(lbl[1])]])
-        
-        Rz=np.array([[np.cos(lbl[2]),-np.sin(lbl[2]),0],
-                     [np.sin(lbl[2]),np.cos(lbl[2]),0],
-                     [0,0,1]])
-        
-        R=Rz@Ry@Rx
-        lbl_vec=np.ones((3,1))
-        
-        lbl2=np.round(R@lbl_vec)[:,0]
-        
-        lbl2[lbl2==-1]=0
+        lbl=self.lbls[index]
+        lbl2=np.zeros(self.rots_table.shape[0]).astype(np.float32)
+        lbl2[lbl]=1
         
         lbl=torch.from_numpy(lbl2)
             

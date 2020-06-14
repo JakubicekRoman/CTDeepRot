@@ -71,7 +71,7 @@ flips_lr=flips_lr(ind);
 rot_dict_unique=table(rots_3d,permss,flips_lr,rots_2d);
 
 writetable(rot_dict_full,'rot_dict_full.csv')
-writetable(rot_dict_full,'rot_dict_unique.csv')
+writetable(rot_dict_unique,'rot_dict_unique.csv')
 
 
 

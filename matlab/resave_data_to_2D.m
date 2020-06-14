@@ -30,10 +30,10 @@ for file_num = 1:length(file_names)
         imwrite(imMean(:,:,dim),[file_names_save '_mean_' num2str(dim) '.png'])
     end
     for dim=1:3
-        imwrite(imMean(:,:,dim),[file_names_save '_mean_' num2str(dim) '.png'])
+        imwrite(imMax(:,:,dim),[file_names_save '_max_' num2str(dim) '.png'])
     end
     for dim=1:3
-        imwrite(imMean(:,:,dim),[file_names_save '_mean_' num2str(dim) '.png'])
+        imwrite(imStd(:,:,dim),[file_names_save '_std_' num2str(dim) '.png'])
     end
     
 end

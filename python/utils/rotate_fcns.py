@@ -88,3 +88,13 @@ def rotate_3d_inverse(img,angels_deg):
     
     return img
 
+
+
+
+def flip_2d(img):
+    
+    
+    img[:,:,0]=np.flipud(img[:,:,0])
+    img[:,:,2]=np.fliplr(img[:,:,2])
+    
+    return img

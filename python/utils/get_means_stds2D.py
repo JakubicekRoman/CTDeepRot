@@ -1,4 +1,3 @@
-from config import Config
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,27 +16,37 @@ from skimage.transform import resize
 from torch.utils import data
 import os
 
-from config import Config
 import pandas as pd 
 
 from skimage.transform import resize
 
 
+path= '../../../CT_rotation_data_2D'
 
-split='training'
 
-xl_file = pd.ExcelFile(Config.data_path + os.sep +split+  os.sep+'labels_bin.xlsx')
+xl_file = pd.ExcelFile(path + os.sep+'ListOfData.xlsx')
 data = pd.read_excel(xl_file,header=None)
-file_names=data.loc[:,0].values.tolist()
 
-folders = ['max_40','max_All','mean_20','mean_All','std_40','std_All']
-Rs= ['R3','R4','R1','R2','R5','R6']
+folders=data.loc[:,0].tolist()
+names=data.loc[:,1].tolist()
+file_names=[]
+for folder,name in zip(folders,names):
+    
+    file_names.append((path + os.sep + folder.split('\\')[-1] + os.sep + name).replace('.mhd',''))
 
+
+file_names=file_names[:int(len(file_names)*0.8)]
+
+    
+folders=['mean','max','std']
+
+    
 STDS = { i : 0 for i in folders  }
 MEANS = { i : 0 for i in folders  }
 
 
-for folder,R in zip(folders,Rs):
+
+for folder in folders:
    
     means=[]
     stds=[]
@@ -45,12 +54,12 @@ for folder,R in zip(folders,Rs):
 
         meas_tmp=[]
         stds_tmp=[]
-        for i,file_name in enumerate(file_names[::11]):
+        for i,file_name in enumerate(file_names):
+            print(i)
     
-            tmp=imread(Config.data_path + os.sep +split +  os.sep +  folder +  os.sep + file_name  +'_' + R + '_Ch' + str(k+1)  + '.png')
+            tmp=imread(file_name + '_' + folder + '_'+ str(k+1)  +'.png' )
             tmp=tmp.astype(np.float32)/255
             
-            tmp=resize(tmp,[224,224])
             
             meas_tmp.append(np.mean(tmp))
             stds_tmp.append(np.std(tmp))

@@ -21,17 +21,20 @@ import pandas as pd
 from skimage.transform import resize
 
 from scipy.ndimage import zoom
-from utils import angle2vec
+
+from utils.rotate_fcns import rotate_2d,rotate_3d
 
 
 
-class DataLoader(data.Dataset):
+class DataLoader3D(data.Dataset):
     
     def __init__(self, split,path_to_data):
     
         self.split=split
         self.path=path_to_data
         
+        data = pd.read_csv("utils/rot_dict_unique.csv") 
+        self.rots_table=data.loc[:,:].to_numpy()
         
         xl_file = pd.ExcelFile(self.path + os.sep+'ListOfData.xlsx')
         data = pd.read_excel(xl_file,header=None)
@@ -50,33 +53,28 @@ class DataLoader(data.Dataset):
             file_names=file_names[:int(len(file_names)*0.8)]
             
         elif self.split=='testing':
-            file_names=file_names[int(len(file_names)*0.8):]
+            file_names=file_names[int(len(file_names)*0.8):-20]
             
+        
         
         self.file_names=[]
         self.vec=[]
         self.flip=[]
+        self.lbls=[]
         for file in file_names:
             for flip in [0,1]:
-                unique_rots=[]
-                for a in [0,90,180,270]:
-                    for b in [0,90,180,270]:
-                        for c in [0,90,180,270] :
-                            
-                            rot=np.array([a,b,c])
-                            rot_vec =angle2vec(rot)
-                            
-                            new=np.sum([all(unique_rot==rot_vec) for unique_rot in unique_rots])==0
-                            
-                            if new:
-                                unique_rots.append(rot_vec)
-                                self.file_names.append(file)
-                                self.vec.append(rot)
-                                self.flip.append(flip)
-                                
+                for unique_rot_num in range(self.rots_table.shape[0]):
+                    
+                    self.file_names.append(file)
+                    self.vec.append(self.rots_table[unique_rot_num,:])
+                    self.flip.append(flip)
+                    self.lbls.append(unique_rot_num)
 
                             
-                            
+          
+        q=1
+                  
+        
     
     def __len__(self):
         return len(self.file_names)
@@ -96,21 +94,15 @@ class DataLoader(data.Dataset):
             
 
 
-
-        a,b,c=self.vec[index]
+        r=self.vec[index][0:3]
         flip=self.flip[index]
-        a=np.array([a])
-        b=np.array([b])
-        c=np.array([c])
         flip=np.array([flip])
             
-        # if flip:
-        #     img=img[:,:,::-1]
+        if flip:
+            img=img[:,::-1,:]
             
             
-        img=np.rot90(img,int(a/90),axes=(0,1))
-        img=np.rot90(img,int(b/90),axes=(0,2))
-        img=np.rot90(img,int(c/90),axes=(1,2))
+        img=rotate_3d(img,r)
         
         # if self.split=='training':
             
@@ -180,8 +172,9 @@ class DataLoader(data.Dataset):
         img=torch.from_numpy(img)
         
         
-        lbls_angle=np.concatenate((a,b,c))
-        lbl2=angle2vec(lbls_angle)
+        lbl=self.lbls[index]
+        lbl2=np.zeros(self.rots_table.shape[0]).astype(np.float32)
+        lbl2[lbl]=1
         
         
         lbl=torch.from_numpy(lbl2)

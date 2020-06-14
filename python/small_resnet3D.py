@@ -36,7 +36,7 @@ class myConv(nn.Module):
 
 
 
-class Simple_3d_net(nn.Module):
+class Small_resnet3D(nn.Module):
     
     
     def __init__(self, input_size,output_size,levels=5,lvl1_size=4):

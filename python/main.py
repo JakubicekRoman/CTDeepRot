@@ -7,20 +7,21 @@ import os
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from dataloader import DataLoader
+from dataloader3D import DataLoader3D
+from dataloader2D import DataLoader2D
 
-from simple_3d_net import Simple_3d_net
+from small_resnet3D import Small_resnet3D
 
-from utils import wce
+from utils.utils import ce
 
 
 from torchvision import models
 
 from config import Config
 
-from utils import Log
+from utils.utils import Log
 
-from utils import get_lr
+from utils.utils  import get_lr
 
 import pickle
 
@@ -38,11 +39,16 @@ if __name__ == '__main__':
     except:
         pass
     
-    
-    loader = DataLoader(split='training',path_to_data=Config.data_path)
+    if Config.is3d:
+        loader = DataLoader3D(split='training',path_to_data=Config.data_path)
+    else:
+        loader = DataLoader2D(split='training',path_to_data=Config.data_path)
     trainloader= data.DataLoader(loader, batch_size=Config.train_batch_size, num_workers=Config.train_num_workers, shuffle=True,drop_last=True)
     
-    loader = DataLoader(split='testing',path_to_data=Config.data_path)
+    if Config.is3d:
+        loader = DataLoader3D(split='testing',path_to_data=Config.data_path)
+    else:
+        loader = DataLoader2D(split='testing',path_to_data=Config.data_path)
     testLoader= data.DataLoader(loader, batch_size=Config.test_batch_size, num_workers=Config.test_num_workers, shuffle=False,drop_last=False)
     
     (batch,lbls)=next(iter(trainloader))
@@ -50,31 +56,28 @@ if __name__ == '__main__':
     input_size=list(batch.size())[1]
     
     
-
     
-    model=Simple_3d_net(input_size=1,output_size=predicted_size,lvl1_size=Config.lvl1_size)
-    # model.load_state_dict(torch.load('3dmodel.pt'))
+    if Config.is3d:
+        model=Small_resnet3D(input_size=1,output_size=predicted_size,lvl1_size=Config.lvl1_size)
+        # model.load_state_dict(torch.load('3dmodel.pt')) 
+    else:
+        model = models.resnet50(pretrained=Config.pretrained)
+        model.conv1 = nn.Conv2d(input_size, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        num_ftrs = model.fc.in_features
+        model.fc = torch.nn.Linear(num_ftrs, predicted_size)
     model=model.to(device)
-    
-    
-    w_positive=np.ones(predicted_size)
-    w_negative=np.ones(predicted_size)
-    w_positive_tensor=torch.from_numpy(w_positive.astype(np.float32)).to(device)
-    w_negative_tensor=torch.from_numpy(w_negative.astype(np.float32)).to(device)
-    
-    
     
     optimizer = optim.Adam(model.parameters(),lr=Config. init_lr ,betas= (0.9, 0.999),eps=1e-8,weight_decay=1e-8)
     scheduler=optim.lr_scheduler.StepLR(optimizer, Config.step_size, gamma=Config.gamma, last_epoch=-1)
     
-
     log = Log()
     for epoch_num in range(Config.max_epochs):
         
         model.train()
         N=len(trainloader)
         for it, (batch,lbls) in enumerate(trainloader):
-            # print(str(it) + '/' + str(N))
+            if it%1==0:
+                print(str(it) + '/' + str(N))
             
             
             batch=batch.to(device)
@@ -82,16 +85,19 @@ if __name__ == '__main__':
             
             res=model(batch)
             
-
+            res=torch.softmax(res,1)
+            loss = ce(res,lbls)
             
-            loss=torch.mean((res-lbls)**2)
             
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
             
+            loss=loss.detach().cpu().numpy()
+            res=res.detach().cpu().numpy()
+            lbls=lbls.detach().cpu().numpy()
 
-            acc=torch.mean((torch.sum((lbls>0)==(res>0),1)==predicted_size).type(torch.float32))
+            acc=np.mean((np.argmax(res,1)==np.argmax(lbls,1)).astype(np.float32))
             
             log.append_train(loss,acc)
     
@@ -101,18 +107,25 @@ if __name__ == '__main__':
         model.eval()    
         N=len(testLoader)
         for it, (batch,lbls) in enumerate(testLoader): 
-            # print(str(it) + '/' + str(N))
+            if it%1==0:
+                print(str(it) + '/' + str(N))
            
             batch=batch.to(device)
             lbls=lbls.to(device)
             
             res=model(batch)
             
+            res=torch.softmax(res,1)
+            loss = ce(res,lbls)
+            
+            
+            loss=loss.detach().cpu().numpy()
+            res=res.detach().cpu().numpy()
+            lbls=lbls.detach().cpu().numpy()
 
-            loss=torch.mean((res-lbls)**2)
+            acc=np.mean((np.argmax(res,1)==np.argmax(lbls,1)).astype(np.float32))
             
-            acc=torch.mean((torch.sum((lbls>0)==(res>0),1)==predicted_size).type(torch.float32))
-            
+    
             log.append_test(loss,acc)
            
            
