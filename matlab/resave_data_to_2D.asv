@@ -5,22 +5,16 @@ path='Z:\CELL\sdileni_jirina_roman_tom\CT_rotation_data';
 
 
 file_names = subdir([path '/*.mhd']);
-file_names={file_names(:).name};
+file_names={file_names(:).names};
 
 
 for file_num = 1:length(file_names)
-    file_num
     
-    file_name=file_names{file_num};
+    file_name=file_names(file_num);
     
     file_names_save=file_name;
     file_names_save=replace(file_names_save,'CT_rotation_data','CT_rotation_data_2D');
     file_names_save=replace(file_names_save,'.mhd','');
-    
-    
-    [filepath,name,ext] = fileparts(file_names_save);
-    
-    mkdir(filepath)
     
     data = load_raw(file_name);
 

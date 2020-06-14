@@ -1,5 +1,5 @@
 clc;clear all;close all;
-
+addpath('utils')
 
 path='Z:\CELL\sdileni_jirina_roman_tom\CT_rotation_data';
 
