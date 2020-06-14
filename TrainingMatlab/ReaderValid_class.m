@@ -1,7 +1,7 @@
 function [GT] = ReaderValid_class(filename)
 
-GT = load(filename);
-GT = GT.GT;
-GT = GT(1:2);
+G = load(filename);
+GT = zeros(24,1);
+GT(G.GT) = 1;
 
-GT = categorical(GT);
+% GT = categorical(GT);
