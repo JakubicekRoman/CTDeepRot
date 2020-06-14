@@ -4,17 +4,20 @@ clc;clear all;close all;
 load("D:\vicar\tmp_romanovi_rotace\CT_rotation_data_mat_128\VerSe2019_test\VerSe20_0001.mat")
 
 
-rotace=[90,180,270];
+rotace=[90,90,90];
 
 
 data_rot=rotate_3d(data,rotace);
 
+%%compare 2d and 3d rotation
+% data_2d_rot1=cat(3,squeeze(mean(data_rot,1)),squeeze(mean(data_rot,2)),squeeze(mean(data_rot,3)));
+% data_2d=cat(3,squeeze(mean(data,1)),squeeze(mean(data,2)),squeeze(mean(data,3)));
+% data_2d_rot2=rotate_2d(data_2d,rotace);
 
-data_2d_rot1=cat(3,squeeze(mean(data_rot,1)),squeeze(mean(data_rot,2)),squeeze(mean(data_rot,3)));
-
-data_2d=cat(3,squeeze(mean(data,1)),squeeze(mean(data,2)),squeeze(mean(data,3)));
-
-data_2d_rot2=rotate_2d(data_2d,rotace);
+%%% compare original vs inverly rotated
+data_2d_rot1=cat(3,squeeze(mean(data,1)),squeeze(mean(data,2)),squeeze(mean(data,3)));
+data=rotate_3d_inverse(data_rot,rotace);
+data_2d_rot2=cat(3,squeeze(mean(data,1)),squeeze(mean(data,2)),squeeze(mean(data,3)));
 
 
 figure();
