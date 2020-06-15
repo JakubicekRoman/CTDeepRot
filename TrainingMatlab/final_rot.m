@@ -5,10 +5,10 @@ close all
 clc
 
 
-load('Trained_nets\Net_3_regr_1.mat','net')
+load('Trained_nets\Net_4_class_4.mat','net')
 
-path_raw = ['\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\DIR\raw\' 'DIR_Data_3.mhd' ];
-% path_raw = ['\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\Dataset_3_CT_Glocker_242_pat_vyber\Data_raw\' '4557469.mhd' ];
+% path_raw = ['\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\DIR\raw\' 'DIR_Data_3.mhd' ];
+path_raw = ['\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\Dataset_3_CT_Glocker_242_pat_vyber\Data_raw\' '4557469.mhd' ];
 % path_raw = ['\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\Dataset_3_CT_Glocker_242_pat_vyber\Data_raw\' '4574668.mhd' ];
 % path_raw = ['\\nas1.ubmi.feec.vutbr.cz\Data\PHILIPS\PHILIPS\MELDOLA\DATA\vc prone and supine 3 cases\raw\' 'colon_sups_3.mhd' ];
 
@@ -16,7 +16,7 @@ im = load_raw(path_raw);
 
 imOrig = create_features(im);
 
-rot = [90,90,180];
+rot = [180,0,180];
 % im = imrotate3(im,rot(1),[1,0,0],'nearest');
 im = rot90_3D(im, 1, rot(1)/90);
 % im = imrotate3(im,rot(2),[0,1,0],'nearest'); % rotY - rotace podle X osy
@@ -24,23 +24,27 @@ im = rot90_3D(im, 2, rot(2)/90);
 % im = imrotate3(im,rot(3),[0,0,1],'nearest'); % rotZ - rotace AXIAL    
 im = rot90_3D(im, 3, rot(3)/90);
 
-codingAngle(rot)
+% codingAngle(rot)
 
 
 %% nalezeni uhlu rotace
 imAll = create_features(im);
+% imAll(:,:,1:3) = imAll(:,:,7:9);
+% imAll(:,:,4:6) = imAll(:,:,7:9);
 
 pred = predict(net, imAll);
-pred(pred>0)=1;pred(pred<=0)=-1
+pred(pred==max(pred))=1;
+pred(pred~=1)=0;
+
 
 %% rotace
 
-angle = 360- vec2angle(pred');
+angle = 360 - decodingAngle(pred);
+angle(angle==360)=0;
 
-imRot = rot90_3D(im, 3, rot(3)/90);
-imRot = rot90_3D(imRot, 2, rot(2)/90);
-imRot = rot90_3D(imRot, 1, rot(1)/90);
-
+imRot = rot90_3D(im, 3, angle(3)/90);
+imRot = rot90_3D(imRot, 2, angle(2)/90);
+imRot = rot90_3D(imRot, 1, angle(1)/90);
 
 imAll2 = create_features(imRot);
 

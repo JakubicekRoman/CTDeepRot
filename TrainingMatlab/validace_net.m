@@ -7,7 +7,9 @@ clc
 % load('Trained_nets\Net_1_2.mat')
 % load('Trained_nets\Net_1_regr_8.mat')
 % load('Trained_nets\Net_3_regr_1.mat')
-load('Trained_nets\Net_4_class_1.mat')
+% load('Trained_nets\Net_4_class_2.mat')  % maxAll 3x - chybne
+% load('Trained_nets\Net_4_class_3.mat')  % mean std a maxAll
+load('Trained_nets\Net_4_class_4.mat')  % only maxAll
 
 %% datastore
 
