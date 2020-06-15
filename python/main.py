@@ -76,7 +76,7 @@ if __name__ == '__main__':
         model.train()
         N=len(trainloader)
         for it, (batch,lbls) in enumerate(trainloader):
-            if it%1==0:
+            if it%50==0:
                 print(str(it) + '/' + str(N))
             
             
@@ -107,7 +107,7 @@ if __name__ == '__main__':
         model.eval()    
         N=len(testLoader)
         for it, (batch,lbls) in enumerate(testLoader): 
-            if it%1==0:
+            if it%50==0:
                 print(str(it) + '/' + str(N))
            
             batch=batch.to(device)
