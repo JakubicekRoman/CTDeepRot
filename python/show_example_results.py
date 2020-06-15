@@ -27,21 +27,22 @@ from utils.rotate_fcns import rotate_2d,rotate_3d,rotate_3d_inverse
 from torchvision import models
 
 from small_resnet3D import Small_resnet3D
+from utils.get_2d_feature_imgs import get_2d_feature_imgs
+
+import skimage.io as io
 
 
-
-# rotation=[90,180,270]
+rotation=[90,180,270]
 # rotation=[0,90,180]
 # rotation=[90,90,0]
 # rotation=[180,0,0]
-rotation=[270,0,180]
-is3d=1
+# rotation=[0,0,0]
+is3d=0
 
 
-if is3d:
-    path='../../CT_rotation_data_npy_128'
-else:
-    path='../../CT_rotation_data_2D'
+
+path=r'Z:\CELL\sdileni_jirina_roman_tom\CT_rotation_data'
+
 
 device = torch.device("cuda:0")
 
@@ -73,7 +74,7 @@ names=data.loc[:,1].tolist()
 file_names=[]
 for folder,name in zip(folders,names):
     
-    file_names.append((path + os.sep + folder.split('\\')[-1] + os.sep + name).replace('.mhd','.npy'))
+    file_names.append((path + os.sep + folder.split('\\')[-1] + os.sep + name))
 
 
 file_names=file_names[-19:-13]   
@@ -81,20 +82,63 @@ file_names=file_names[-19:-13]
 
 for file_num,file_name in enumerate(file_names):
     
-    orig_data=np.load(file_name)
-    
+
+    orig_data = np.transpose(io.imread(file_name, plugin='simpleitk'),[1,2,0])
+
     rotated_data=orig_data.copy()
     rotated_data=rotate_3d(rotated_data,rotation)
+            
+    # img=rotated_data.copy()
+    img=orig_data.copy()
     
+    if is3d:
+        factor=np.array([128,128,128])/img.shape
     
-    img=rotated_data.copy()
-    img=img.astype(np.float32)
-    MEAN=614.2868
-    STD=614.2868
-    img=(img-MEAN)/STD
+        img=zoom(img,factor,order=1)
+        img=img.astype(np.float32)
+        MEAN=614.2868
+        STD=614.2868
+        img=(img-MEAN)/STD
+    else:
         
+
+        MEANS={'mean': [0.31656316, 0.31815434, 0.319901],
+        'max': [0.48267424, 0.38830274, 0.37235856],
+        'std': [0.40330338, 0.29134238, 0.23324046]}
+        
+        STDS={'mean': [0.11143641, 0.18203282, 0.20284137],
+             'max': [0.15405223, 0.2034344, 0.22770199],
+             'std': [0.11865007, 0.16135372, 0.15640634]}
+        
+        
+        imMean,imMax,imStd=get_2d_feature_imgs(img)
+        
+        img_list=[imMean[:,:,0],imMean[:,:,1],imMean[:,:,2],imMax[:,:,0],imMax[:,:,1],imMax[:,:,2],imStd[:,:,0],imStd[:,:,1],imStd[:,:,2]]
+        
+        folders=['mean','max','std']
+        
+        ind=-1
+        for folder in folders:
+            
+            for k in range(3):
+                ind=ind+1
+                tmp=img_list[ind]
+                tmp=tmp.astype(np.float32)/255
+                tmp=(tmp-MEANS[folder][k])/(STDS[folder][k])
+                img_list[ind]=tmp
     
-    img=np.expand_dims(img, axis=0)
+        img=np.stack(img_list,axis=2)
+        
+    img=np.stack(img_list,axis=2)
+    for k in range(0,9,3):
+        img[:,:,k:k+3]=rotate_2d(img[:,:,k:k+3],rotation)
+   
+
+    if is3d:
+        img=np.expand_dims(img, axis=0)
+    else:
+        img=np.transpose(img,(2,0,1))
+    
     img=np.expand_dims(img, axis=0).copy()
     img=torch.from_numpy(img)
     img=img.to(device)
