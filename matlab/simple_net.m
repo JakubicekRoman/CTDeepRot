@@ -1,10 +1,10 @@
 function lgraph = simple_net()
 
 input_size=128;
-lvls=5;
+lvls=4;
 lvl1_filters=3;
 convs_in_layer=3;
-output_size=3;
+output_size=24;
 
 layers=[];
 
@@ -34,7 +34,10 @@ end
 layer = fullyConnectedLayer(output_size,'Name','fc');
 layers=[layers,layer];
 % layer = regressionLayer('Name','routput');
-layer =customRegresionLayer('routput');
+layer =mySoftMax('sm');
+layers=[layers,layer];
+
+layer =customClassificationLayer('coutput');
 layers=[layers,layer];
 
 

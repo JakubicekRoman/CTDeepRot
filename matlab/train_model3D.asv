@@ -1,7 +1,10 @@
 clear all;close all force;clc;
 addpath('utils')
 
-data_path='../../CT_rotation_data_2D';
+%dbstop if error
+%dbclear if error
+
+data_path='../../CT_rotation_data_mat_128';
 
 % names=subdir([data_path '/*.mat']);
 % names={names(:).name};
@@ -41,37 +44,45 @@ for file_num=1:length(files)
 end
 
 
+names_train=names(1:round(0.8*length(names)));
+names_test=names(round(0.8*length(names))+1:end-20);
 
 
-names_train=names(1:round(0.8*length(all_files)));
-names_test=names(round(0.8*length(all_files))+1:end-20);
 
 
-imdsTrain = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData3D);
-imdsTrainL = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData3D_lbl);
+% imdsTrain = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData3D);
+% imdsTrainL = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
+% imdsTrainComb = combine(imdsTrain,imdsTrainL);
+% 
+% imdsTest = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData3D);
+% imdsTestL = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
+% imdsTestComb = combine(imdsTrain,imdsTestL);
+% 
+% lgraph = simple_net();
+
+
+imdsTrain = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData2D);
+imdsTrainL = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
 imdsTrainComb = combine(imdsTrain,imdsTrainL);
 
-
-imdsTest = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData3D);
-imdsTestL = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData3D_lbl);
+imdsTest = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData2D);
+imdsTestL = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
 imdsTestComb = combine(imdsTrain,imdsTestL);
 
+lgraph = resnet_2d();
 
 
-test_data=read(imdsTrainComb);
 
 
-lgraph = simple_net();
-
-
+data_example=read(imdsTrainComb);
 
 bs=8;
-vf=length(imdsTrain.Files)/bs/2;
+vf=round(length(imdsTrain.Files)/bs/2);
 options = trainingOptions('adam', ...
     'LearnRateSchedule','piecewise', ...
     'LearnRateDropFactor',0.1, ...
-    'LearnRateDropPeriod',30, ...
-    'MaxEpochs',70, ...
+    'LearnRateDropPeriod',6, ...
+    'MaxEpochs',14, ...
     'ValidationFrequency',vf,...
     'ValidationData', imdsTestComb, ...
     'MiniBatchSize',bs, ...

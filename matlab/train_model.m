@@ -1,13 +1,21 @@
 clear all;close all force;clc;
 addpath('utils')
 
-data_path='../../CT_rotation_data_mat_128';
+%dbstop if error
+%dbclear if error
 
-% names=subdir([data_path '/*.mat']);
-% names={names(:).name};
-% for name =names
-%     delete(name{1})
-% end
+
+is3d=0;
+
+
+if is3d
+	data_path='../../CT_rotation_data_mat_128';
+    name='net3d';
+else
+    data_path='../../CT_rotation_data_2D';
+    name='net2d';
+end
+
 
 
 rot_table=readtable('utils/rot_dict_unique.csv');
@@ -41,34 +49,62 @@ for file_num=1:length(files)
 end
 
 
+% for name =names
+%     delete(name{1})
+% end
 
 
 names_train=names(1:round(0.8*length(names)));
 names_test=names(round(0.8*length(names))+1:end-20);
 
 
-imdsTrain = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData3D);
-imdsTrainL = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
-imdsTrainComb = combine(imdsTrain,imdsTrainL);
 
+if is3d==1
+    imdsTrain = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData3D);
+    imdsTrainL = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
+    imdsTrainComb = combine(imdsTrain,imdsTrainL);
 
-imdsTest = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData3D);
-imdsTestL = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
-imdsTestComb = combine(imdsTrain,imdsTestL);
+    imdsTest = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData3D);
+    imdsTestL = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
+    imdsTestComb = combine(imdsTest,imdsTestL);
 
+    lgraph = simple_net();
 
+else
 
-lgraph = simple_net();
+    imdsTrain = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData2D);
+    imdsTrainL = imageDatastore(names_train,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
+    imdsTrainComb = combine(imdsTrain,imdsTrainL);
 
+    imdsTest = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData2D);
+    imdsTestL = imageDatastore(names_test,'FileExtensions','.mat','ReadFcn',@ReadData_lbl);
+    imdsTestComb = combine(imdsTest,imdsTestL);
+
+    lgraph = resnet_2d();
+
+end
+
+% 
+% data_example=read(imdsTrainComb);
+% data=data_example{1};
+% data=cat(3,squeeze(mean(data,1)),squeeze(mean(data,2)),squeeze(mean(data,3)));
+% 
+% figure();
+% subplot(2,3,1)
+% imshow(data(:,:,1),[])
+% subplot(2,3,2)
+% imshow(data(:,:,2),[])
+% subplot(2,3,3)
+% imshow(data(:,:,3),[])
 
 
 bs=8;
-vf=length(imdsTrain.Files)/bs/2;
+vf=round(length(imdsTrain.Files)/bs/2);
 options = trainingOptions('adam', ...
     'LearnRateSchedule','piecewise', ...
     'LearnRateDropFactor',0.1, ...
-    'LearnRateDropPeriod',30, ...
-    'MaxEpochs',70, ...
+    'LearnRateDropPeriod',6, ...
+    'MaxEpochs',14, ...
     'ValidationFrequency',vf,...
     'ValidationData', imdsTestComb, ...
     'MiniBatchSize',bs, ...

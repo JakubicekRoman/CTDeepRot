@@ -16,7 +16,7 @@ load([file_name '.mat'])
 
 
 if flip
-    data=data(:,end-1:1,:);
+    data=data(:,end:-1:1,:);
 end
 
 data = rotate_3d(data,[x_rot,y_rot,z_rot]);
