@@ -5,15 +5,17 @@ addpath('utils')
 %dbclear if error
 
 
-is3d=0;
+is3d=1;
 
 
 if is3d
 	data_path='../../CT_rotation_data_mat_128';
     name='net3d';
+    bs=8;
 else
     data_path='../../CT_rotation_data_2D';
     name='net2d';
+    bs=32;
 end
 
 
@@ -55,7 +57,7 @@ end
 
 
 names_train=names(1:round(0.8*length(names)));
-names_test=names(round(0.8*length(names))+1:end-20);
+names_test=names(round(0.8*length(names))+1:end-20*48);
 
 
 
@@ -84,21 +86,25 @@ else
 
 end
 
-% 
-% data_example=read(imdsTrainComb);
-% data=data_example{1};
-% data=cat(3,squeeze(mean(data,1)),squeeze(mean(data,2)),squeeze(mean(data,3)));
-% 
-% figure();
-% subplot(2,3,1)
-% imshow(data(:,:,1),[])
-% subplot(2,3,2)
-% imshow(data(:,:,2),[])
-% subplot(2,3,3)
-% imshow(data(:,:,3),[])
 
 
-bs=8;
+for k=1:20
+data_example=read(imdsTrainComb);
+data=data_example{1};
+data=cat(3,squeeze(mean(data,1)),squeeze(mean(data,2)),squeeze(mean(data,3)));
+
+figure();
+subplot(2,3,1)
+imshow(data(:,:,1),[])
+subplot(2,3,2)
+imshow(data(:,:,2),[])
+subplot(2,3,3)
+imshow(data(:,:,3),[])
+drawnow
+end
+
+
+
 vf=round(length(imdsTrain.Files)/bs/2);
 options = trainingOptions('adam', ...
     'LearnRateSchedule','piecewise', ...

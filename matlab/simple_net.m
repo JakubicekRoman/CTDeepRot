@@ -1,8 +1,8 @@
 function lgraph = simple_net()
 
 input_size=128;
-lvls=4;
-lvl1_filters=3;
+lvls=5;
+lvl1_filters=4;
 convs_in_layer=3;
 output_size=24;
 
