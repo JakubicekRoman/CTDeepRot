@@ -59,22 +59,22 @@ classdef customClassificationLayer < nnet.layer.RegressionLayer
             
 %             q=Y-T;
 %             q=sign(Y-T);
+            Y(Y<1e-6)=1e-6;
             q = -(T./Y);
             
             T=1-T;
             Y=1-Y;
+            Y(Y<1e-6)=1e-6;
             qq =(T./Y);
             
             
             dLdY = (q+qq)/numel(q);
             
             tmp=isnan(dLdY);
-            s=sum(tmp(:));
-            if s>0
-                disp(['NaNs in dL  '  num2str(s)])
-                dLdY(tmp)=0;
+            if sum(tmp)>0
+                
             end
-            
+            dLdY(isnan(dLdY))=0;
             
         end
     end

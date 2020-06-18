@@ -34,13 +34,13 @@ end
 layer = dropoutLayer(0.1,'Name','do');
 layers=[layers,layer];
 
-layer = fullyConnectedLayer(100,'Name','fc1');
+layer = fullyConnectedLayer(100,'Name','fc');
 layers=[layers,layer];
 
 
-layer = fullyConnectedLayer(output_size,'Name','fc2');
+layer = fullyConnectedLayer(output_size,'Name','fc');
 layers=[layers,layer];
-
+% layer = regressionLayer('Name','routput');
 layer =mySoftMax('sm');
 layers=[layers,layer];
 

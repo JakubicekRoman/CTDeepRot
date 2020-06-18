@@ -23,11 +23,11 @@ classdef mySoftMax  < nnet.layer.Layer
 %             Z =  1 ./ (1 + exp(-X));
 %             X = squeeze(X);
             D=find(size(X)==24);
-            if isempty(D)
-                error('different nuber of outputs')
+            if isempty(find([0,0,0]))
+                
             end
 
-            b=max(X,[],D);
+            b=max(X,[],length(size(X))-1);
             
             
             X=X-b;

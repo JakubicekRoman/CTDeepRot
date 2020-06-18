@@ -23,6 +23,12 @@ data = rotate_3d(data,[x_rot,y_rot,z_rot]);
 
 data=(data-MEAN)/STD;
 
+tmp=isnan(data);
+if sum(tmp(:))>0
+
+    disp('je tu nan')
+    drawnow;
+end
 
 
 
