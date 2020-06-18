@@ -99,12 +99,21 @@ for file_num,file_name in enumerate(file_names):
                 
                 print(rotation)
             
+                ind=-1
+                angels_deg=angels_deg=np.array([[a,b,c]])
+                for k in range(rots_table.shape[0]):
+                    if np.sum(rots_table[k,:3]==angels_deg)==3:
+                        ind=k
+                        break
                 
                 
                 rotated_data=orig_data.copy()
                 rotated_data=rotate_3d(rotated_data,rotation)
                         
                 img=rotated_data.copy()
+                
+                file_name2=file_name
+                file_name2=file_name2.replace(path,'../../CT_rotation_data_2D').replace('.mhd','')
                 
                 
                 if is3d:
@@ -127,26 +136,44 @@ for file_num,file_name in enumerate(file_names):
                     
                     imMean,imMax,imStd=get_2d_feature_imgs(img)
                     
-                    img_list=[imMean[:,:,0],imMean[:,:,1],imMean[:,:,2],imMax[:,:,0],imMax[:,:,1],imMax[:,:,2],imStd[:,:,0],imStd[:,:,1],imStd[:,:,2]]
+                    img_list2=[imMean[:,:,0],imMean[:,:,1],imMean[:,:,2],imMax[:,:,0],imMax[:,:,1],imMax[:,:,2],imStd[:,:,0],imStd[:,:,1],imStd[:,:,2]]
+                    
                     
                     folders=['mean','max','std']
                     
                     ind=-1
                     for folder in folders:
-                        
                         for k in range(3):
                             ind=ind+1
-                            tmp=img_list[ind]
+                            tmp=img_list2[ind]
                             tmp=tmp.astype(np.float32)/255
                             tmp=(tmp-MEANS[folder][k])/(STDS[folder][k])
-                            img_list[ind]=tmp
+                            img_list2[ind]=tmp
+                    
+                    
+                    
+                    folders=['mean','max','std']
+                    img_list=[]
+                    for folder in folders:
+                        for k in range(3):
+                            tmp=imread(file_name2 + '_' + folder + '_'+ str(k+1)  +'.png' )
+                            tmp=tmp.astype(np.float32)/255
+                            tmp=(tmp-MEANS[folder][k])/(STDS[folder][k])
+                            img_list.append(tmp)
+                            
+                    
+                    
+                    
                 
                     img=np.stack(img_list,axis=2)
                     
-                    
+                    for k in range(0,9,3):
+                        img[:,:,k:k+3]=rotate_2d(img[:,:,k:k+3],rotation)
                 
                 
+                    img2=np.stack(img_list2,axis=2)
                 
+                    fgdfgdfgdfggfdgdfg
                 
                     
                 

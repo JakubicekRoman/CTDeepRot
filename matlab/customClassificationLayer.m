@@ -59,14 +59,15 @@ classdef customClassificationLayer < nnet.layer.RegressionLayer
             
 %             q=Y-T;
 %             q=sign(Y-T);
+
+            Y(Y< eps('single')) = eps('single');
+
             q = -(T./Y);
             
-            T=1-T;
-            Y=1-Y;
-            qq =(T./Y);
             
             
-            dLdY = (q+qq)/numel(q);
+            
+            dLdY = (q)/numel(q);
             
             tmp=isnan(dLdY);
             s=sum(tmp(:));

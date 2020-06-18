@@ -14,12 +14,14 @@ if is3d
     bs=8;
     drop=3;
     epoch=7;
+    lr=0.001;
 else
     data_path='../../CT_rotation_data_2D';
     name='net2d';
     bs=32;
     drop=6;
     epoch=14;
+    lr=0.001;
 end
 
 
@@ -122,7 +124,7 @@ options = trainingOptions('adam', ...
     'Plots','training-progress',...
     'Shuffle','every-epoch',...
     'L2Regularization',1e-6,...
-    'InitialLearnRate',0.001);
+    'InitialLearnRate',lr);
 
 
 net = trainNetwork(imdsTrainComb,lgraph,options);
