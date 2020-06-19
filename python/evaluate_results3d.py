@@ -49,15 +49,8 @@ device = torch.device("cuda:0")
 
 
 
-if is3d:
-    model=Small_resnet3D(input_size=1,output_size=24,lvl1_size=4)
-    model.load_state_dict(torch.load('../../models_python/Aug3D8_0.0001_train_0.9876055_valid_0.9995229_model.pt')) 
-else:
-    model = models.resnet50(pretrained=0)
-    model.conv1 = nn.Conv2d(9, 64, kernel_size=7, stride=2, padding=3, bias=False)
-    num_ftrs = model.fc.in_features
-    model.fc = torch.nn.Linear(num_ftrs, 24)
-    model.load_state_dict(torch.load('../../models_python/NoAug2D10_1e-05_train_0.9766281_valid_0.99909806_model.pt')) 
+model=Small_resnet3D(input_size=1,output_size=24,lvl1_size=4)
+model.load_state_dict(torch.load('../../models_python/Aug3D8_0.0001_train_0.9876055_valid_0.9995229_model.pt')) 
 
 model=model.to(device)
 model=model.eval()
@@ -109,42 +102,13 @@ for file_num,file_name in enumerate(file_names):
                 img=rotated_data.copy()
                 
                 
-                if is3d:
-                    
-                    img=img.astype(np.float32)
-                    MEAN=614.2868
-                    STD=614.2868
-                    img=(img-MEAN)/STD
-                else:
-                    
-            
-                    MEANS={'mean': [0.31656316, 0.31815434, 0.319901],
-                    'max': [0.48267424, 0.38830274, 0.37235856],
-                    'std': [0.40330338, 0.29134238, 0.23324046]}
-                    
-                    STDS={'mean': [0.11143641, 0.18203282, 0.20284137],
-                         'max': [0.15405223, 0.2034344, 0.22770199],
-                         'std': [0.11865007, 0.16135372, 0.15640634]}
-                    
-                    
-                    imMean,imMax,imStd=get_2d_feature_imgs(img)
-                    
-                    img_list=[imMean[:,:,0],imMean[:,:,1],imMean[:,:,2],imMax[:,:,0],imMax[:,:,1],imMax[:,:,2],imStd[:,:,0],imStd[:,:,1],imStd[:,:,2]]
-                    
-                    folders=['mean','max','std']
-                    
-                    ind=-1
-                    for folder in folders:
-                        
-                        for k in range(3):
-                            ind=ind+1
-                            tmp=img_list[ind]
-                            tmp=tmp.astype(np.float32)/255
-                            tmp=(tmp-MEANS[folder][k])/(STDS[folder][k])
-                            img_list[ind]=tmp
                 
-                    imgs=np.stack(img_list,axis=2)
                     
+                img=img.astype(np.float32)
+                MEAN=614.2868
+                STD=614.2868
+                img=(img-MEAN)/STD
+                
                     
                 
                 
@@ -172,7 +136,33 @@ for file_num,file_name in enumerate(file_names):
                 
                 
                 difs.append(dif)
+                print(dif)
                 
+                
+                plt.figure(figsize=(15, 15))
+    
+                plt.subplot(3,3,1)
+                plt.imshow(np.mean(orig_data,0))
+                plt.subplot(3,3,2)
+                plt.imshow(np.mean(orig_data,1))
+                plt.subplot(3,3,3)
+                plt.imshow(np.mean(orig_data,2))
+                
+                plt.subplot(3,3,4)
+                plt.imshow(np.mean(rotated_data,0))
+                plt.subplot(3,3,5)
+                plt.imshow(np.mean(rotated_data,1))
+                plt.subplot(3,3,6)
+                plt.imshow(np.mean(rotated_data,2))
+                
+                plt.subplot(3,3,7)
+                plt.imshow(np.mean(fixed_data,0))
+                plt.subplot(3,3,8)
+                plt.imshow(np.mean(fixed_data,1))
+                plt.subplot(3,3,9)
+                plt.imshow(np.mean(fixed_data,2))
+                
+                plt.show()
                 
               
     

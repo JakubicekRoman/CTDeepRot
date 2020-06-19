@@ -5,7 +5,7 @@ addpath('utils')
 %dbclear if error
 
 
-load('../../Trained_nets/net2d.mat')
+load('../../Trained_nets/net2d_9775.mat')
 
 
 data_path='Z:\CELL\sdileni_jirina_roman_tom\CT_rotation_data';

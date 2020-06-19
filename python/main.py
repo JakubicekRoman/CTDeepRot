@@ -135,7 +135,7 @@ if __name__ == '__main__':
          
         
         
-        info= str(epoch_num) + '_' + str(get_lr(optimizer)) + '_train_'  + str(log.test_acc_log[-1]) + '_valid_' + str(log.trainig_acc_log[-1]) 
+        info= str(epoch_num) + '_' + str(get_lr(optimizer)) + '_train_'  + str(log.trainig_acc_log[-1]) + '_valid_' + str(log.test_acc_log[-1]) 
         print(info)
         log.plot()
         

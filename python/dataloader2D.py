@@ -85,13 +85,6 @@ class DataLoader2D(data.Dataset):
         
 
         
-        MEANS={'mean': [0.31656316, 0.31815434, 0.319901],
-             'max': [0.48267424, 0.38830274, 0.37235856],
-             'std': [0.40330338, 0.29134238, 0.23324046]}
-        
-        STDS={'mean': [0.11143641, 0.18203282, 0.20284137],
-             'max': [0.15405223, 0.2034344, 0.22770199],
-             'std': [0.11865007, 0.16135372, 0.15640634]}
         
         folders=['mean','max','std']
         
@@ -99,8 +92,7 @@ class DataLoader2D(data.Dataset):
             
             for k in range(3):
                 tmp=imread(file_name + '_' + folder + '_'+ str(k+1)  +'.png' )
-                tmp=tmp.astype(np.float32)/255
-                tmp=(tmp-MEANS[folder][k])/(STDS[folder][k])
+                tmp=tmp.astype(np.float32)/255-0.5
                 img_list.append(tmp)
                 
 

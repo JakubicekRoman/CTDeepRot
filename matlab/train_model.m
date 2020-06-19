@@ -12,8 +12,8 @@ if is3d
 	data_path='../../CT_rotation_data_mat_128';
     name='net3d';
     bs=8;
-    drop=3;
-    epoch=7;
+    drop=2;
+    epoch=5;
     lr=0.001;
 else
     data_path='../../CT_rotation_data_2D';
