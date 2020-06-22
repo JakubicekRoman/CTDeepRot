@@ -50,11 +50,11 @@ device = torch.device("cuda:0")
 
 
 
-model = models.resnet50(pretrained=0)
+model = models.resnet18(pretrained=0)
 model.conv1 = nn.Conv2d(9, 64, kernel_size=7, stride=2, padding=3, bias=False)
 num_ftrs = model.fc.in_features
 model.fc = torch.nn.Linear(num_ftrs, 24)
-model.load_state_dict(torch.load('../../models_python/NoAug2D11_1e-05_train_0.9974003_valid_0.9766281_model.pt')) 
+model.load_state_dict(torch.load('example_prediction/models/net2d.pt')) 
 
 
 model=model.to(device)
@@ -75,7 +75,10 @@ for folder,name in zip(folders,names):
     file_names.append((path + os.sep + folder.split('\\')[-1] + os.sep + name))
 
 
-file_names=file_names[-20:]
+file_names=file_names[int(len(file_names)*0.8):]
+
+file_names_all=[]
+rots=[]
 
 difs=[]
 
@@ -165,33 +168,35 @@ for file_num,file_name in enumerate(file_names):
                     dif=99999
                 
                 difs.append(dif)
+                rots.append(rotation)
+                file_names_all.append(file_name)
                 print(dif)
                 
                 
-                plt.figure(figsize=(15, 15))
+                # plt.figure(figsize=(15, 15))
     
-                plt.subplot(3,3,1)
-                plt.imshow(np.mean(orig_data,0))
-                plt.subplot(3,3,2)
-                plt.imshow(np.mean(orig_data,1))
-                plt.subplot(3,3,3)
-                plt.imshow(np.mean(orig_data,2))
+                # plt.subplot(3,3,1)
+                # plt.imshow(np.mean(orig_data,0))
+                # plt.subplot(3,3,2)
+                # plt.imshow(np.mean(orig_data,1))
+                # plt.subplot(3,3,3)
+                # plt.imshow(np.mean(orig_data,2))
                 
-                plt.subplot(3,3,4)
-                plt.imshow(np.mean(rotated_data,0))
-                plt.subplot(3,3,5)
-                plt.imshow(np.mean(rotated_data,1))
-                plt.subplot(3,3,6)
-                plt.imshow(np.mean(rotated_data,2))
+                # plt.subplot(3,3,4)
+                # plt.imshow(np.mean(rotated_data,0))
+                # plt.subplot(3,3,5)
+                # plt.imshow(np.mean(rotated_data,1))
+                # plt.subplot(3,3,6)
+                # plt.imshow(np.mean(rotated_data,2))
                 
-                plt.subplot(3,3,7)
-                plt.imshow(np.mean(fixed_data,0))
-                plt.subplot(3,3,8)
-                plt.imshow(np.mean(fixed_data,1))
-                plt.subplot(3,3,9)
-                plt.imshow(np.mean(fixed_data,2))
+                # plt.subplot(3,3,7)
+                # plt.imshow(np.mean(fixed_data,0))
+                # plt.subplot(3,3,8)
+                # plt.imshow(np.mean(fixed_data,1))
+                # plt.subplot(3,3,9)
+                # plt.imshow(np.mean(fixed_data,2))
                 
-                plt.show()
+                # plt.show()
                 
                 
                 
