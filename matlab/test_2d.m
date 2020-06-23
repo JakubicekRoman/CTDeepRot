@@ -33,11 +33,13 @@ files=files(round(0.8*length(files))+1:end);
 
 
 difs=[];
-names=[];
-rotations_gt=[];
-rotations_predicted=[];
+psts=[];
+names={};
+rotations_gt={};
+rotations_predicted={};
+
 for num_file=1:length(files)
-    
+    num_file
     
     
     
@@ -63,7 +65,7 @@ for num_file=1:length(files)
                 res=predict(net,data_2d);
                 
                 
-                [~,ind]=max(res);
+                [mres,ind]=max(res);
                 
                 pred_rot=unique_rots(ind,:);
                 
@@ -76,10 +78,10 @@ for num_file=1:length(files)
                 tmp=abs(data-data_fix);
                 
                 dif=sum(tmp(:))
-                
+                psts=[psts mres];
                 difs=[difs,dif];
                 names=[names,file];
-                rotations_gt=[rotations_gt,file];
+                rotations_gt=[rotations_gt,rot];
                 rotations_predicted=[rotations_predicted,pred_rot];
                 
                 
@@ -119,7 +121,7 @@ end
 mean(difs==0)
 
 
-save('results_2d.mat','difs','names','rotations_gt','rotations_predicted')
+save('results_2d.mat','difs','names','rotations_gt','rotations_predicted','psts')
 
 
 

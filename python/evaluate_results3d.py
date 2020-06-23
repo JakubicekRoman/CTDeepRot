@@ -31,6 +31,8 @@ from utils.get_2d_feature_imgs import get_2d_feature_imgs
 
 import skimage.io as io
 
+from scipy.io import savemat
+
 
 # rotation=[90,180,270]
 # rotation=[0,90,180]
@@ -41,8 +43,7 @@ is3d=1
 
 
 
-path=r'Z:\CELL\sdileni_jirina_roman_tom\CT_rotation_data'
-
+path=r'D:\vicar\tmp_romanovi_rotace\CT_rotation_data_x'
 
 device = torch.device("cuda:0")
 
@@ -67,12 +68,17 @@ names=data.loc[:,1].tolist()
 file_names=[]
 for folder,name in zip(folders,names):
     
-    file_names.append((path + os.sep + folder.split('\\')[-1] + os.sep + name))
+    file_names.append((path + os.sep + folder.split('\\')[-1] + os.sep + 'x' + name + '.mhd'))
 
 
 file_names=file_names[-20:]
 
+file_names_all=[]
+rots_gt=[]
 difs=[]
+rots_res=[]
+psts=[]
+
 
 for file_num,file_name in enumerate(file_names):
     print(file_num)
@@ -80,7 +86,8 @@ for file_num,file_name in enumerate(file_names):
     try:
         orig_data = np.transpose(io.imread(file_name, plugin='simpleitk'),[1,2,0])
     except:
-        print('fail')
+        print('fail!!!!!!!!!!!!!!!!!!!!!!!!')
+        fsfdsffsdfs
         continue
     factor=np.array([128,128,128])/orig_data.shape
                 
@@ -136,37 +143,45 @@ for file_num,file_name in enumerate(file_names):
                 
                 
                 difs.append(dif)
+                file_names_all.append(file_name)
+                rots_gt.append(rotation)
+                rots_res.append(pred_rot)
+                psts.append(np.max(res))
                 print(dif)
                 
                 
-                plt.figure(figsize=(15, 15))
+                # plt.figure(figsize=(15, 15))
     
-                plt.subplot(3,3,1)
-                plt.imshow(np.mean(orig_data,0))
-                plt.subplot(3,3,2)
-                plt.imshow(np.mean(orig_data,1))
-                plt.subplot(3,3,3)
-                plt.imshow(np.mean(orig_data,2))
+                # plt.subplot(3,3,1)
+                # plt.imshow(np.mean(orig_data,0))
+                # plt.subplot(3,3,2)
+                # plt.imshow(np.mean(orig_data,1))
+                # plt.subplot(3,3,3)
+                # plt.imshow(np.mean(orig_data,2))
                 
-                plt.subplot(3,3,4)
-                plt.imshow(np.mean(rotated_data,0))
-                plt.subplot(3,3,5)
-                plt.imshow(np.mean(rotated_data,1))
-                plt.subplot(3,3,6)
-                plt.imshow(np.mean(rotated_data,2))
+                # plt.subplot(3,3,4)
+                # plt.imshow(np.mean(rotated_data,0))
+                # plt.subplot(3,3,5)
+                # plt.imshow(np.mean(rotated_data,1))
+                # plt.subplot(3,3,6)
+                # plt.imshow(np.mean(rotated_data,2))
                 
-                plt.subplot(3,3,7)
-                plt.imshow(np.mean(fixed_data,0))
-                plt.subplot(3,3,8)
-                plt.imshow(np.mean(fixed_data,1))
-                plt.subplot(3,3,9)
-                plt.imshow(np.mean(fixed_data,2))
+                # plt.subplot(3,3,7)
+                # plt.imshow(np.mean(fixed_data,0))
+                # plt.subplot(3,3,8)
+                # plt.imshow(np.mean(fixed_data,1))
+                # plt.subplot(3,3,9)
+                # plt.imshow(np.mean(fixed_data,2))
                 
-                plt.show()
+                # plt.show()
                 
               
     
+              
+mdic = {"difs": difs, "file_names_all": file_names_all,"rots_gt":rots_gt,"rots_res":rots_res,"psts":psts}
 
+savemat("results_3d.mat", mdic)
+    
 acc=np.mean((np.array(difs)==0).astype(np.float))
 
 

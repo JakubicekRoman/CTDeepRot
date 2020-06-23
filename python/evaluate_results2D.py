@@ -31,6 +31,7 @@ from utils.get_2d_feature_imgs import get_2d_feature_imgs
 
 import skimage.io as io
 
+from scipy.io import savemat
 
 # rotation=[90,180,270]
 # rotation=[0,90,180]
@@ -41,7 +42,7 @@ is3d=0
 
 
 
-path=r'Z:\CELL\sdileni_jirina_roman_tom\CT_rotation_data'
+path=r'D:\vicar\tmp_romanovi_rotace\CT_rotation_data_x'
 
 
 device = torch.device("cuda:0")
@@ -72,15 +73,17 @@ names=data.loc[:,1].tolist()
 file_names=[]
 for folder,name in zip(folders,names):
     
-    file_names.append((path + os.sep + folder.split('\\')[-1] + os.sep + name))
+    file_names.append((path + os.sep + folder.split('\\')[-1] + os.sep + 'x' +  name +'.mhd'))
 
 
 file_names=file_names[int(len(file_names)*0.8):]
 
 file_names_all=[]
-rots=[]
-
+rots_gt=[]
 difs=[]
+rots_res=[]
+psts=[]
+
 
 for file_num,file_name in enumerate(file_names):
     print('file ' + str(file_num))
@@ -91,6 +94,9 @@ for file_num,file_name in enumerate(file_names):
         print('fail')
         continue
 
+    factor=np.array([224,224,224])/orig_data.shape
+                
+    orig_data=zoom(orig_data,factor,order=1)
     
     for a in [0,90,180,270]:
         for b in [0,90,180,270]:
@@ -168,8 +174,10 @@ for file_num,file_name in enumerate(file_names):
                     dif=99999
                 
                 difs.append(dif)
-                rots.append(rotation)
                 file_names_all.append(file_name)
+                rots_gt.append(rotation)
+                rots_res.append(pred_rot)
+                psts.append(np.max(res))
                 print(dif)
                 
                 
@@ -201,6 +209,9 @@ for file_num,file_name in enumerate(file_names):
                 
                 
               
+mdic = {"difs": difs, "file_names_all": file_names_all,"rots_gt":rots_gt,"rots_res":rots_res,"psts":psts}
+
+savemat("results_2d.mat", mdic)
     
 
 acc=np.mean((np.array(difs)==0).astype(np.float))
