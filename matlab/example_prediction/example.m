@@ -5,7 +5,7 @@ file_name='Z:\CELL\sdileni_jirina_roman_tom\CT_rotation_data\VerSe2020_train\Ver
 orig_data=single(load_raw(file_name));
 
 
-rotated_data=rotate_3d(orig_data,[90,180,270]);
+rotated_data=rotate_3d(orig_data,[0,90,0]);
 
 
 % [fixed_data,angles] = predict2d(rotated_data);

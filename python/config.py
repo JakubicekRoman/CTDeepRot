@@ -31,23 +31,45 @@ class Config:
 
 
 
-    data_path='../../CT_rotation_data_2D'
+    # data_path='../../CT_rotation_data_2D'
     
-    model_name='NoAug2D'
+    # model_name='NoAug2D'
     
-    is3d=False
+    # is3d=False
     
-    train_batch_size = 32
-    test_batch_size = 32
+    # train_batch_size = 32
+    # test_batch_size = 32
     
         
-    max_epochs = 12
-    step_size=5
+    # max_epochs = 12
+    # step_size=5
+    # gamma=0.1
+    # init_lr=0.001
+    
+
+    # pretrained=True
+    
+    
+    
+    
+    data_path='../../CT_rotation_data_2D'
+    
+    model_name='prasecina'
+    
+    is3d=2
+    
+    train_batch_size = 8
+    test_batch_size = 4
+    
+        
+    max_epochs = 25
+    step_size=7
     gamma=0.1
     init_lr=0.001
     
 
     pretrained=True
+    
     
     
     

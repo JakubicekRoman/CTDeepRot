@@ -4,12 +4,13 @@ addpath('utils')
 % load('results_2d.mat')
 % load('results_3d.mat')
 
+save_folder_name='../../d2';
+mkdir(save_folder_name)
 
 
 
 
-load('D:\vicar\tmp_romanovi_rotace\CTDeepRot\python/results_2d3d.mat')
-% load('D:\vicar\tmp_romanovi_rotace\CTDeepRot\python/results_2d.mat')
+load('D:\vicar\tmp_romanovi_rotace\CTDeepRot\python/results_2d.mat')
 % load('D:\vicar\tmp_romanovi_rotace\CTDeepRot\python/results_3d.mat')
 names={};
 for k=1:size(file_names_all,1)
@@ -116,20 +117,38 @@ for k=1:length(spatne_names_u)
 %     data=single(load_raw([file '.mhd']));
     data=single(load_raw([file]));
     
+    [filepath,file,ext] = fileparts(file);
+    
+    imwrite(uint8(255*mat2gray(squeeze(mean(data,1)))),[save_folder_name '/' file 'mean1.png'] )
+    imwrite(uint8(255*mat2gray(squeeze(mean(data,2)))),[save_folder_name '/' file 'mean2.png'] )
+    imwrite(uint8(255*mat2gray(squeeze(mean(data,3)))),[save_folder_name '/' file 'mean3.png'] )
+    
+    imwrite(uint8(255*mat2gray(squeeze(max(data,[],1)))),[save_folder_name '/' file 'max1.png'] )
+    imwrite(uint8(255*mat2gray(squeeze(max(data,[],2)))),[save_folder_name '/' file 'max2.png'] )
+    imwrite(uint8(255*mat2gray(squeeze(max(data,[],3)))),[save_folder_name '/' file 'max3.png'] )
+    
+    imwrite(uint8(255*mat2gray(squeeze(std(data,[],1)))),[save_folder_name '/' file 'std1.png'] )
+    imwrite(uint8(255*mat2gray(squeeze(std(data,[],2)))),[save_folder_name '/' file 'std2.png'] )
+    imwrite(uint8(255*mat2gray(squeeze(std(data,[],3)))),[save_folder_name '/' file 'std3.png'] )
+    
     
     data=imresize3(data,[224,224,224]);
     
     [imMean,imMax,imStd]=get_2d_feature_imgs(data);
     
-    tmp=imStd;
-       figure()
-    subplot(3,3,1)
-    imshow(tmp(:,:,1),[])
-    title(kolik_spatne(k))
-    subplot(3,3,2)
-    imshow(tmp(:,:,2),[])
-    subplot(3,3,3)
-    imshow(tmp(:,:,3),[])
+    
+    
+    
+    
+%     tmp=imStd;
+%        figure()
+%     subplot(3,3,1)
+%     imshow(tmp(:,:,1),[])
+%     title(kolik_spatne(k))
+%     subplot(3,3,2)
+%     imshow(tmp(:,:,2),[])
+%     subplot(3,3,3)
+%     imshow(tmp(:,:,3),[])
 
     
 %     figure()

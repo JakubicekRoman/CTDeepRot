@@ -71,7 +71,7 @@ for folder,name in zip(folders,names):
     file_names.append((path + os.sep + folder.split('\\')[-1] + os.sep + 'x' + name + '.mhd'))
 
 
-file_names=file_names[-20:]
+file_names=file_names[int(len(file_names)*0.8):]
 
 file_names_all=[]
 rots_gt=[]
