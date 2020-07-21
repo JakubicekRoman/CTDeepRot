@@ -12,6 +12,14 @@ file_name="Z:\CELL\sdileni_jirina_roman_tom\CT_rotation_data\VerSe2020_train\Ver
 orig_data = np.transpose(io.imread(file_name, plugin='simpleitk'),[1,2,0])
 
 
+orig_data(orig_data<-1024)=np.nan
+if np.nanmin(orig_data)<0:
+    orig_data=orig_data+1024
+orig_data(np.isnan(orig_data))=0
+
+
+
+
 rotated_data=orig_data.copy()
 rotated_data=rotate_3d(rotated_data,[90,180,270])
 
@@ -39,15 +47,15 @@ plt.show()
 plt.figure(figsize=(15, 7))
 plt.suptitle('Input')
 plt.subplot(1,3,1)
-plt.imshow(np.mean(orig_data,0))
+plt.imshow(np.mean(rotated_data,0))
 plt.title('coronal')
 plt.xlabel('cranial<------> caudal')
 plt.subplot(1,3,2)
-plt.imshow(np.mean(orig_data,1))
+plt.imshow(np.mean(rotated_data,1))
 plt.title('sagital')
 plt.xlabel('cranial <------> caudal')
 plt.subplot(1,3,3)
-plt.imshow(np.mean(orig_data,2))
+plt.imshow(np.mean(rotated_data,2))
 plt.title('axial')
 plt.xlabel('left/rigth <------> rigth/left')
 plt.show()
@@ -55,15 +63,15 @@ plt.show()
 plt.figure(figsize=(15, 7))
 plt.suptitle('Results')
 plt.subplot(1,3,1)
-plt.imshow(np.mean(orig_data,0))
+plt.imshow(np.mean(fixed_data,0))
 plt.title('coronal')
 plt.xlabel('cranial<------> caudal')
 plt.subplot(1,3,2)
-plt.imshow(np.mean(orig_data,1))
+plt.imshow(np.mean(fixed_data,1))
 plt.title('sagital')
 plt.xlabel('cranial <------> caudal')
 plt.subplot(1,3,3)
-plt.imshow(np.mean(orig_data,2))
+plt.imshow(np.mean(fixed_data,2))
 plt.title('axial')
 plt.xlabel('left/rigth <------> rigth/left')
 plt.show()
