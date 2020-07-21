@@ -4,6 +4,12 @@ file_name='Z:\CELL\sdileni_jirina_roman_tom\CT_rotation_data\VerSe2020_train\Ver
 
 orig_data=single(load_raw(file_name));
 
+orig_data(orig_data<-1024)=nan;
+if nanmin(orig_data(:))<0
+    orig_data=orig_data+1024;
+end
+orig_data(isnan(orig_data))=0;
+
 
 rotated_data=rotate_3d(orig_data,[90,180,270]);
 
