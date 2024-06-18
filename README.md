@@ -5,4 +5,8 @@ Code can be executed by "example" script in "example_prediction" folder for both
 
 Please cite the following paper when using CTDeepRot:
 
-Jakubicek R, Vicar T, Chmelik J. A Tool for Automatic Estimation of Patient Position in Spinal CT Data [Internet]. Vol. 80, IFMBE Proceedings. Springer International Publishing; 2021. 51–56 p. Available from: http://dx.doi.org/10.1007/978-3-030-64610-3_7
+Jakubicek R, Vicar T, Chmelik J. A Tool for Automatic Estimation of Patient Position in Spinal CT Data [Internet]. Vol. 80, IFMBE Proceedings. Springer International Publishing; 2021. 51–56 p.
+
+Please cite the [following paper](http://dx.doi.org/10.1007/978-3-030-64610-3_7) when using CTDeepRot:
+
+    Jakubicek R, Vicar T, Chmelik J. A Tool for Automatic Estimation of Patient Position in Spinal CT Data [Internet]. Vol. 80, IFMBE Proceedings. Springer International Publishing; 2021. 51–56 p.
