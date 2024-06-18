@@ -4,4 +4,5 @@ A tool for automatic rotation of spinal CT data into a standardized (HFS) patien
 Code can be executed by "example" script in "example_prediction" folder for both, Matalb and Python. Just change the variable "file_name", which should be full path to your mhd/raw file.
 
 Please cite the following paper when using CTDeepRot:
+
 Jakubicek R, Vicar T, Chmelik J. A Tool for Automatic Estimation of Patient Position in Spinal CT Data [Internet]. Vol. 80, IFMBE Proceedings. Springer International Publishing; 2021. 51–56 p. Available from: http://dx.doi.org/10.1007/978-3-030-64610-3_7
